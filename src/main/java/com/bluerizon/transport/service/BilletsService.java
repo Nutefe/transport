@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class BilletsService implements BilletsDao {
@@ -21,6 +22,11 @@ public class BilletsService implements BilletsDao {
     @Override
     public Billets findByIdBillet(Long id) {
         return repository.findByIdBillet(id);
+    }
+
+    @Override
+    public Optional<Billets> findById(Long id) {
+        return repository.findById(id);
     }
 
     @Override

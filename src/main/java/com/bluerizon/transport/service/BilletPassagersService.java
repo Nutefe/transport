@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class BilletPassagersService implements BilletPassagersDao {
@@ -18,6 +19,11 @@ public class BilletPassagersService implements BilletPassagersDao {
     @Override
     public BilletPassagers findByIdBillet(Long id) {
         return repository.findByIdBillet(id);
+    }
+
+    @Override
+    public Optional<BilletPassagers> findById(Long id) {
+        return repository.findById(id);
     }
 
     @Override
@@ -46,7 +52,7 @@ public class BilletPassagersService implements BilletPassagersDao {
     }
 
     @Override
-    public List<Billets> findByClient(Clients client, Pageable pageable) {
+    public List<BilletPassagers> findByClient(Clients client, Pageable pageable) {
         return repository.findByClient(client, pageable);
     }
 

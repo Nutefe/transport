@@ -6,10 +6,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ArretsDao {
 
     Arrets findByIdArret(final Long id);
+
+    Optional<Arrets> findById(final Long id);
 
     List<Arrets> findByDeletedFalseOrderByIdArretDesc();
 

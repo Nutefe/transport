@@ -5,10 +5,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface VoyagesDao {
 
     Voyages findByIdVoyage(final Long id);
+
+    Optional<Voyages> findById(final Long id);
 
     List<Voyages> findByDeletedFalse();
 

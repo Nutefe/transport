@@ -43,45 +43,12 @@ public class DbInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception , ParseException {
 
-        Privileges privilege1 = new Privileges();
-        privilege1.setIdPrivilege(1);
-        privilege1.setName("CREATE");
-
-        Privileges privilegesCreate = this.privilegesRepository.findByIdPrivilege(1);
-        if (privilegesCreate == null){
-            this.privilegesRepository.save(privilege1);
-        }
-
-        Privileges privilege2 = new Privileges();
-        privilege2.setIdPrivilege(2);
-        privilege2.setName("UPDATE");
-
-        Privileges privilegesUpdate = this.privilegesRepository.findByIdPrivilege(2);
-        if (privilegesUpdate == null){
-            this.privilegesRepository.save(privilege2);
-        }
-
-        Privileges privilege3 = new Privileges();
-        privilege3.setIdPrivilege(3);
-        privilege3.setName("DELETE");
-
-        Privileges privilegesDelete = this.privilegesRepository.findByIdPrivilege(3);
-        if (privilegesDelete == null){
-            this.privilegesRepository.save(privilege3);
-        }
-
-        Set<Privileges> privileges = new HashSet<>();
-        privileges.add(privilege1);
-        privileges.add(privilege2);
-        privileges.add(privilege3);
-
         // ---------- cretaion des users------------
         System.out.println(" -- insert Roles");
 
         Roles role1 = new Roles();
         role1.setIdRole(1);
         role1.setLibelle("SUPER_ADMIN");
-        role1.setPrivileges(privileges);
 
         Roles roleSuperAdmin = this.rolesRepository.findByIdRole(1);
         if (roleSuperAdmin == null){
@@ -91,7 +58,6 @@ public class DbInitializer implements CommandLineRunner {
         Roles role2 = new Roles();
         role2.setIdRole(2);
         role2.setLibelle("ADMIN");
-        role2.setPrivileges(privileges);
 
         Roles roleAdmin = this.rolesRepository.findByIdRole(2);
         if (roleAdmin == null){
@@ -101,7 +67,6 @@ public class DbInitializer implements CommandLineRunner {
         Roles role3 = new Roles();
         role3.setIdRole(3);
         role3.setLibelle("DIRECTEUR");
-        role3.setPrivileges(privileges);
 
         Roles roleDirecteur = this.rolesRepository.findByIdRole(3);
         if (roleDirecteur == null){
@@ -111,7 +76,6 @@ public class DbInitializer implements CommandLineRunner {
         Roles role4 = new Roles();
         role4.setIdRole(4);
         role4.setLibelle("GERANT");
-        role4.setPrivileges(privileges);
 
         Roles roleGerant = this.rolesRepository.findByIdRole(4);
         if (roleGerant == null){
@@ -121,7 +85,6 @@ public class DbInitializer implements CommandLineRunner {
         Roles role5 = new Roles();
         role5.setIdRole(5);
         role5.setLibelle("CAISSIER");
-        role5.setPrivileges(privileges);
 
         Roles roleCaissier = this.rolesRepository.findByIdRole(5);
         if (roleCaissier == null){
@@ -131,7 +94,6 @@ public class DbInitializer implements CommandLineRunner {
         Roles role6 = new Roles();
         role6.setIdRole(6);
         role6.setLibelle("CLIENT");
-        role6.setPrivileges(privileges);
 
         Roles roleClient = this.rolesRepository.findByIdRole(6);
         if (roleClient == null){

@@ -57,11 +57,12 @@ public class JwtTokenProvider {
     }
 
     public boolean validateToken(String authToken, HttpServletRequest httpServletRequest) {
+//         catch (SignatureException ex) {
+//            logger.error("JWT signature does not match");
+//        }
         try {
             Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
             return true;
-        } catch (SignatureException ex) {
-            logger.error("JWT signature does not match");
         } catch (MalformedJwtException ex) {
             logger.error("Invalid JWT token");
         } catch (ExpiredJwtException ex) {

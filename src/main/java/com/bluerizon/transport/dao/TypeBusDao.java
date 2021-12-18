@@ -7,14 +7,19 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface TypeBusDao {
 
     TypeBus findByIdTypeBus(final Long id);
 
+    Optional<TypeBus> findById(final Long id);
+
     List<TypeBus> findByDeletedFalseOrderByIdTypeBusDesc();
 
     List<TypeBus> findByDeletedTrueOrderByIdTypeBusDesc();
+
+    List<TypeBus> findByCompagnie(Compagnies compagnie);
 
     List<TypeBus> findAllByDeletedFalse(Pageable pageable);
 
@@ -33,5 +38,7 @@ public interface TypeBusDao {
     Long countByDeletedFalse();
 
     Long countRechercheCompagnie(Compagnies compagnie, String search);
+
+    Long countByCompagnie(Compagnies compagnie);
 
 }

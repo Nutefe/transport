@@ -35,14 +35,6 @@ public class Roles implements Serializable {
     private Integer idRole;
     @Column(name = "libelle")
     private String libelle;
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "roles_privileges",
-            joinColumns = @JoinColumn(
-                    name = "role_id", referencedColumnName = "idRole"),
-            inverseJoinColumns = @JoinColumn(
-                    name = "privilege_id", referencedColumnName = "idPrivilege"))
-    private Set<Privileges> privileges = new HashSet<>();
     @Column(name = "deleted")
     private boolean deleted = false;
     @Version
@@ -79,14 +71,6 @@ public class Roles implements Serializable {
 
     public void setLibelle(String libelle) {
         this.libelle = libelle;
-    }
-
-    public Set<Privileges> getPrivileges() {
-        return privileges;
-    }
-
-    public void setPrivileges(Set<Privileges> privileges) {
-        this.privileges = privileges;
     }
 
     public boolean isDeleted() {

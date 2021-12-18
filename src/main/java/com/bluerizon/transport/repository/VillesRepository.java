@@ -25,8 +25,14 @@ public interface VillesRepository extends JpaRepository<Villes, Long> {
     @Query("SELECT v FROM Villes v WHERE v.deleted = false AND v.compagnie=?1 ORDER BY v.idVille DESC")
     List<Villes> findByCompagnie(Compagnies compagnie, Pageable pageable);
 
+    @Query("SELECT v FROM Villes v WHERE v.deleted = false AND v.compagnie=?1 ORDER BY v.idVille DESC")
+    List<Villes> findByCompagnie(Compagnies compagnie);
+
     @Query("SELECT v FROM Villes v WHERE v.deleted = false AND v.pays=?1 ORDER BY v.idVille DESC")
     List<Villes> findByPays(Pays pays, Pageable pageable);
+
+    @Query("SELECT v FROM Villes v WHERE v.deleted = false AND v.pays=?1 ORDER BY v.idVille DESC")
+    List<Villes> findByPays(Pays pays);
 
     @Query("SELECT v FROM Villes v WHERE v.nomVille LIKE CONCAT('%',:search,'%') AND v.deleted = false")
     List<Villes> recherche(String search, Pageable pageable);
@@ -48,5 +54,11 @@ public interface VillesRepository extends JpaRepository<Villes, Long> {
 
     @Query("SELECT COUNT(v) FROM Villes v WHERE v.deleted = false AND v.pays=:pays AND v.nomVille LIKE CONCAT('%',:search,'%')")
     Long countRecherchePays(Pays pays, String search);
+
+    @Query("SELECT COUNT(v) FROM Villes v WHERE v.deleted = false AND v.pays=?1 ORDER BY v.idVille DESC")
+    Long countByPays(Pays pays);
+
+    @Query("SELECT COUNT(v) FROM Villes v WHERE v.deleted = false AND v.compagnie=?1 ORDER BY v.idVille DESC")
+    Long countByCompagnie(Compagnies compagnie);
 
 }

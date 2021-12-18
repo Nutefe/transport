@@ -24,6 +24,9 @@ public interface TypeBusRepository extends JpaRepository<TypeBus, Long> {
     @Query("SELECT t FROM TypeBus t WHERE t.deleted = false AND t.userCompagnie.userPK.compagnie=?1 ORDER BY t.idTypeBus DESC")
     List<TypeBus> findByCompagnie(Pageable pageable, Compagnies compagnie);
 
+    @Query("SELECT t FROM TypeBus t WHERE t.deleted = false AND t.userCompagnie.userPK.compagnie=?1 ORDER BY t.idTypeBus DESC")
+    List<TypeBus> findByCompagnie(Compagnies compagnie);
+
     @Query("SELECT t FROM TypeBus t WHERE t.libelle LIKE CONCAT('%',:search,'%') AND t.deleted = false ORDER BY t.idTypeBus DESC")
     List<TypeBus> recherche(String search, Pageable pageable);
 
@@ -38,5 +41,8 @@ public interface TypeBusRepository extends JpaRepository<TypeBus, Long> {
 
     @Query("SELECT COUNT(t) FROM TypeBus t WHERE t.deleted = false AND t.userCompagnie.userPK.compagnie=:compagnie AND t.libelle LIKE CONCAT('%',:search,'%')")
     Long countRechercheCompagnie(Compagnies compagnie, String search);
+
+    @Query("SELECT COUNT(t) FROM TypeBus t WHERE t.deleted = false AND t.userCompagnie.userPK.compagnie=?1 ORDER BY t.idTypeBus DESC")
+    Long countByCompagnie(Compagnies compagnie);
 
 }

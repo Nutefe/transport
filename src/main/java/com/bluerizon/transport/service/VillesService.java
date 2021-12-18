@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class VillesService implements VillesDao {
@@ -23,6 +24,11 @@ public class VillesService implements VillesDao {
     }
 
     @Override
+    public Optional<Villes> findById(Long id) {
+        return repository.findById(id);
+    }
+
+    @Override
     public List<Villes> findByDeletedFalseOrderByIdVilleDesc() {
         return repository.findByDeletedFalseOrderByIdVilleDesc();
     }
@@ -30,6 +36,16 @@ public class VillesService implements VillesDao {
     @Override
     public List<Villes> findByDeletedTrueOrderByIdVilleDesc() {
         return repository.findByDeletedTrueOrderByIdVilleDesc();
+    }
+
+    @Override
+    public List<Villes> findByCompagnie(Compagnies compagnie) {
+        return repository.findByCompagnie(compagnie);
+    }
+
+    @Override
+    public List<Villes> findByPays(Pays pays) {
+        return repository.findByPays(pays);
     }
 
     @Override
@@ -90,5 +106,15 @@ public class VillesService implements VillesDao {
     @Override
     public Long countRecherchePays(Pays pays, String search) {
         return repository.countRecherchePays(pays, search);
+    }
+
+    @Override
+    public Long countByPays(Pays pays) {
+        return repository.countByPays(pays);
+    }
+
+    @Override
+    public Long countByCompagnie(Compagnies compagnie) {
+        return repository.countByCompagnie(compagnie);
     }
 }

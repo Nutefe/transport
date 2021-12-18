@@ -155,7 +155,7 @@ public class UsersService implements UsersDao {
     }
 
     @Override
-    public Long contUserDirecteur() {
+    public Long countUserDirecteur() {
         return repository.contUserDirecteur();
     }
 

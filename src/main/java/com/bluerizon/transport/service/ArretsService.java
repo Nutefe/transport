@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ArretsService implements ArretsDao {
@@ -19,6 +20,11 @@ public class ArretsService implements ArretsDao {
     @Override
     public Arrets findByIdArret(Long id) {
         return repository.findByIdArret(id);
+    }
+
+    @Override
+    public Optional<Arrets> findById(Long id) {
+        return repository.findById(id);
     }
 
     @Override

@@ -102,4 +102,10 @@ public class UserCompagniesService implements UserCompagnieDao {
     public Long countRechercheUser(Users user, String search) {
         return repository.countRechercheUser(user, search);
     }
+
+    @Override
+    public void delete(UserPK userPK) {
+        repository.deleteById(userPK);
+    }
+
 }

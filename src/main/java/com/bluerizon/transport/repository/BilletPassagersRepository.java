@@ -26,7 +26,7 @@ public interface BilletPassagersRepository extends JpaRepository<BilletPassagers
     List<BilletPassagers> findByVoyage(Voyages voyage, Pageable pageable);
 
     @Query("SELECT b FROM BilletPassagers b WHERE b.deleted = false AND b.client=?1 ORDER BY b.idBillet DESC")
-    List<Billets> findByClient(Clients client, Pageable pageable);
+    List<BilletPassagers> findByClient(Clients client, Pageable pageable);
 
     @Query("SELECT b FROM BilletPassagers b WHERE (b.user.username LIKE CONCAT('%',:search,'%') OR " +
             "b.user.nom LIKE CONCAT('%',:search,'%') OR " +

@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class BilletColisService implements BilletColisDao {
@@ -21,6 +22,11 @@ public class BilletColisService implements BilletColisDao {
     @Override
     public BilletColis findByIdBillet(Long id) {
         return repository.findByIdBillet(id);
+    }
+
+    @Override
+    public Optional<BilletColis> findById(Long id) {
+        return repository.findById(id);
     }
 
     @Override

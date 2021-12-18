@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class TypeBusService implements TypeBusDao {
@@ -22,6 +23,11 @@ public class TypeBusService implements TypeBusDao {
     }
 
     @Override
+    public Optional<TypeBus> findById(Long id) {
+        return repository.findById(id);
+    }
+
+    @Override
     public List<TypeBus> findByDeletedFalseOrderByIdTypeBusDesc() {
         return repository.findByDeletedFalseOrderByIdTypeBusDesc();
     }
@@ -29,6 +35,11 @@ public class TypeBusService implements TypeBusDao {
     @Override
     public List<TypeBus> findByDeletedTrueOrderByIdTypeBusDesc() {
         return repository.findByDeletedTrueOrderByIdTypeBusDesc();
+    }
+
+    @Override
+    public List<TypeBus> findByCompagnie(Compagnies compagnie) {
+        return repository.findByCompagnie(compagnie);
     }
 
     @Override
@@ -74,5 +85,10 @@ public class TypeBusService implements TypeBusDao {
     @Override
     public Long countRechercheCompagnie(Compagnies compagnie, String search) {
         return repository.countRechercheCompagnie(compagnie, search);
+    }
+
+    @Override
+    public Long countByCompagnie(Compagnies compagnie) {
+        return repository.countByCompagnie(compagnie);
     }
 }

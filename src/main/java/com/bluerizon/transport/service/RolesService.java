@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class RolesService implements RolesDao {
@@ -18,6 +19,11 @@ public class RolesService implements RolesDao {
     @Override
     public Roles findByIdRole(Integer id) {
         return repository.findByIdRole(id);
+    }
+
+    @Override
+    public Optional<Roles> findById(Integer id) {
+        return repository.findById(id);
     }
 
     @Override

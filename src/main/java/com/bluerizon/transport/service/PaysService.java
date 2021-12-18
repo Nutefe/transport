@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PaysService implements PaysDao {
@@ -18,6 +19,11 @@ public class PaysService implements PaysDao {
     @Override
     public Pays findByIdPays(Integer id) {
         return repository.findByIdPays(id);
+    }
+
+    @Override
+    public Optional<Pays> findById(Integer id) {
+        return repository.findById(id);
     }
 
     @Override

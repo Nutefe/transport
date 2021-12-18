@@ -42,4 +42,6 @@ public interface UserCompagnieDao {
 
     Long countRechercheUser(Users user, String search);
 
+    void delete(final UserPK userPK);
+
 }

@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class VoyagesService implements VoyagesDao {
@@ -21,6 +22,11 @@ public class VoyagesService implements VoyagesDao {
     @Override
     public Voyages findByIdVoyage(Long id) {
         return repository.findByIdVoyage(id);
+    }
+
+    @Override
+    public Optional<Voyages> findById(Long id) {
+        return repository.findById(id);
     }
 
     @Override

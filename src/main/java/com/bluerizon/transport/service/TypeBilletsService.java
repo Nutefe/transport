@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class TypeBilletsService implements TypeBilletsDao {
@@ -18,6 +19,11 @@ public class TypeBilletsService implements TypeBilletsDao {
     @Override
     public TypeBillets findByIdTypeBillet(Integer id) {
         return repository.findByIdTypeBillet(id);
+    }
+
+    @Override
+    public Optional<TypeBillets> findById(Integer id) {
+        return repository.findById(id);
     }
 
     @Override

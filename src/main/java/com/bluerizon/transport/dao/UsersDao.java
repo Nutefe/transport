@@ -67,7 +67,7 @@ public interface UsersDao {
 
     Long countUserSys(Long idUser);
 
-    Long contUserDirecteur();
+    Long countUserDirecteur();
 
     Long countUserDirecteurActif();
 

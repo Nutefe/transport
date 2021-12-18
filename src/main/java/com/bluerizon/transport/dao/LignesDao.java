@@ -6,10 +6,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface LignesDao {
 
     Lignes findByIdLigne(final Long id);
+
+    Optional<Lignes> findById(final Long id);
 
     List<Lignes> findByDeletedFalseOrderByIdLigneDesc();
 

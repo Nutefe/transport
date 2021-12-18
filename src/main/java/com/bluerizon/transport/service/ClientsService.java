@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ClientsService implements ClientsDao {
@@ -19,6 +20,11 @@ public class ClientsService implements ClientsDao {
     @Override
     public Clients findByIdClient(Long id) {
         return repository.findByIdClient(id);
+    }
+
+    @Override
+    public Optional<Clients> findById(Long id) {
+        return repository.findById(id);
     }
 
     @Override

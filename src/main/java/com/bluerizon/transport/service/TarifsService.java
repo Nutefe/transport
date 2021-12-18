@@ -1,10 +1,7 @@
 package com.bluerizon.transport.service;
 
 import com.bluerizon.transport.dao.TarifsDao;
-import com.bluerizon.transport.entity.Bus;
-import com.bluerizon.transport.entity.Lignes;
-import com.bluerizon.transport.entity.TarifPK;
-import com.bluerizon.transport.entity.Tarifs;
+import com.bluerizon.transport.entity.*;
 import com.bluerizon.transport.repository.TarifsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -101,5 +98,30 @@ public class TarifsService implements TarifsDao {
     @Override
     public Long countByDeletedFalse() {
         return repository.countByDeletedFalse();
+    }
+
+    @Override
+    public List<Tarifs> findByCompagnie(Compagnies compagnie) {
+        return repository.findByCompagnie(compagnie);
+    }
+
+    @Override
+    public List<Tarifs> findByCompagnie(Compagnies compagnie, Pageable pageable) {
+        return repository.findByCompagnie(compagnie, pageable);
+    }
+
+    @Override
+    public List<Tarifs> rechercheCompagnie(Compagnies compagnie, String search, Pageable pageable) {
+        return repository.rechercheCompagnie(compagnie, search, pageable);
+    }
+
+    @Override
+    public Long countRechercheCompagnie(Compagnies compagnie, String search) {
+        return repository.countRechercheCompagnie(compagnie, search);
+    }
+
+    @Override
+    public Long countByCompagnie(Compagnies compagnie) {
+        return repository.countByCompagnie(compagnie);
     }
 }

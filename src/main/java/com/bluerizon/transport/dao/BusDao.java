@@ -9,10 +9,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface BusDao {
 
     Bus findByIdBus(final Long id);
+
+    Optional<Bus> findById(final Long id);
 
     List<Bus> findByDeletedFalseOrderByIdBusDesc();
 

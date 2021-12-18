@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class BusService implements BusDao {
@@ -20,6 +21,11 @@ public class BusService implements BusDao {
     @Override
     public Bus findByIdBus(Long id) {
         return repository.findByIdBus(id);
+    }
+
+    @Override
+    public Optional<Bus> findById(Long id) {
+        return repository.findById(id);
     }
 
     @Override

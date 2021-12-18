@@ -42,4 +42,14 @@ public interface TarifsDao {
 
     Long countByDeletedFalse();
 
+    List<Tarifs> findByCompagnie(Compagnies compagnie);
+
+    List<Tarifs> findByCompagnie(Compagnies compagnie, Pageable pageable);
+
+    List<Tarifs> rechercheCompagnie(Compagnies compagnie, String search, Pageable pageable);
+
+    Long countRechercheCompagnie(Compagnies compagnie, String search);
+
+    Long countByCompagnie(Compagnies compagnie);
+
 }

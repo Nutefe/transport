@@ -5,10 +5,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface BilletPassagersDao {
 
     BilletPassagers findByIdBillet(final Long id);
+
+    Optional<BilletPassagers> findById(final Long id);
 
     List<BilletPassagers> findByDeletedFalseOrderByIdBilletDesc();
 
@@ -20,7 +23,7 @@ public interface BilletPassagersDao {
 
     List<BilletPassagers> findByVoyage(Voyages voyage, Pageable pageable);
 
-    List<Billets> findByClient(Clients client, Pageable pageable);
+    List<BilletPassagers> findByClient(Clients client, Pageable pageable);
 
     List<BilletPassagers> recherche(String search, Pageable pageable);
 

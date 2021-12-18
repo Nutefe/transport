@@ -17,6 +17,9 @@ public interface TarifsRepository extends JpaRepository<Tarifs, TarifPK> {
 
     List<Tarifs> findByDeletedTrue();
 
+    @Query("SELECT t FROM Tarifs t WHERE t.deleted = false AND t.tarifPK.bus.compagnie=?1")
+    List<Tarifs> findByCompagnie(Compagnies compagnie);
+
     List<Tarifs> findByDeletedFalse(Pageable pageable);
 
     @Query("SELECT t FROM Tarifs t WHERE t.deleted = false AND t.tarifPK.ligne=?1")
@@ -24,6 +27,9 @@ public interface TarifsRepository extends JpaRepository<Tarifs, TarifPK> {
 
     @Query("SELECT t FROM Tarifs t WHERE t.deleted = false AND t.tarifPK.bus=?1")
     List<Tarifs> findByBus(Bus bus, Pageable pageable);
+
+    @Query("SELECT t FROM Tarifs t WHERE t.deleted = false AND t.tarifPK.bus.compagnie=?1")
+    List<Tarifs> findByCompagnie(Compagnies compagnie, Pageable pageable);
 
     @Query("SELECT t FROM Tarifs t WHERE (t.prixPassager LIKE CONCAT('%',:search,'%') OR " +
             "t.prixKilo LIKE CONCAT('%',:search,'%')) AND t.deleted = false")
@@ -37,6 +43,10 @@ public interface TarifsRepository extends JpaRepository<Tarifs, TarifPK> {
             "t.prixKilo LIKE CONCAT('%',:search,'%')) AND (t.deleted = false AND t.tarifPK.bus=:bus)")
     List<Tarifs> rechercheBus(Bus bus, String search, Pageable pageable);
 
+    @Query("SELECT t FROM Tarifs t WHERE (t.prixPassager LIKE CONCAT('%',:search,'%') OR " +
+            "t.prixKilo LIKE CONCAT('%',:search,'%')) AND (t.deleted = false AND t.tarifPK.bus.compagnie=:compagnie)")
+    List<Tarifs> rechercheCompagnie(Compagnies compagnie, String search, Pageable pageable);
+
     @Query("SELECT COUNT(t) FROM Tarifs t WHERE (t.prixPassager LIKE CONCAT('%',:search,'%') OR " +
             "t.prixKilo LIKE CONCAT('%',:search,'%')) AND t.deleted = false")
     Long countRecherche(String search);
@@ -49,6 +59,10 @@ public interface TarifsRepository extends JpaRepository<Tarifs, TarifPK> {
             "t.prixKilo LIKE CONCAT('%',:search,'%')) AND (t.deleted = false AND t.tarifPK.bus=:bus)")
     Long countRechercheBus(Bus bus, String search);
 
+    @Query("SELECT COUNT(t) FROM Tarifs t WHERE (t.prixPassager LIKE CONCAT('%',:search,'%') OR " +
+            "t.prixKilo LIKE CONCAT('%',:search,'%')) AND (t.deleted = false AND t.tarifPK.bus.compagnie=:compagnie)")
+    Long countRechercheCompagnie(Compagnies compagnie, String search);
+
     @Query("SELECT COUNT(t) FROM Tarifs t WHERE t.deleted = false AND t.tarifPK.ligne=?1")
     Long countByLigne(Lignes ligne);
 
@@ -57,5 +71,8 @@ public interface TarifsRepository extends JpaRepository<Tarifs, TarifPK> {
 
     @Query("SELECT COUNT(t) FROM Tarifs t WHERE t.deleted = false")
     Long countByDeletedFalse();
+
+    @Query("SELECT t FROM Tarifs t WHERE t.deleted = false AND t.tarifPK.bus.compagnie=?1")
+    Long countByCompagnie(Compagnies compagnie);
 
 }

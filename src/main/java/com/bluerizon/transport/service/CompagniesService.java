@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CompagniesService implements CompagniesDao {
@@ -18,6 +19,11 @@ public class CompagniesService implements CompagniesDao {
     @Override
     public Compagnies findByIdCompagnie(Long id) {
         return repository.findByIdCompagnie(id);
+    }
+
+    @Override
+    public Optional<Compagnies> findById(Long id) {
+        return repository.findById(id);
     }
 
     @Override

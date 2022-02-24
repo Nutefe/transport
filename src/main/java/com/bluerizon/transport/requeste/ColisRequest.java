@@ -7,6 +7,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 public class ColisRequest {
 
@@ -19,7 +21,7 @@ public class ColisRequest {
     private String nomCompletDestinataire;
     @NotBlank
     private String contactDestinataire;
-    @NotBlank
+    @NotNull
     private double poidsColis;
     private Voyages voyage;
     private Bus bus;

@@ -28,6 +28,8 @@ public interface UsersDao {
 
     List<Users> selectUserSys(Long idUser);
 
+    List<Users> selectUserSys();
+
     List<Users> selectUserDirecteur(Pageable pageable);
 
     List<Users> selectUserDirecteur();

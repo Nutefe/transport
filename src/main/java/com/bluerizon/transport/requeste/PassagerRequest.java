@@ -7,18 +7,16 @@ import com.bluerizon.transport.entity.Voyages;
 
 import javax.persistence.Column;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 public class PassagerRequest {
 
     @NotBlank
-    private String nomCompletExpediteur;
+    private String nomComplet;
     @NotBlank
-    private String contactExpediteur;
+    private String contact;
     private Compagnies compagnie;
-    @NotBlank
-    private String nomCompletDestinataire;
-    @NotBlank
-    private String contactDestinataire;
+    @NotNull
     private double poidsApporte;
     private Voyages voyage;
     private Bus bus;
@@ -27,20 +25,20 @@ public class PassagerRequest {
     public PassagerRequest() {
     }
 
-    public String getNomCompletExpediteur() {
-        return nomCompletExpediteur;
+    public String getNomComplet() {
+        return nomComplet;
     }
 
-    public void setNomCompletExpediteur(String nomCompletExpediteur) {
-        this.nomCompletExpediteur = nomCompletExpediteur;
+    public void setNomComplet(String nomComplet) {
+        this.nomComplet = nomComplet;
     }
 
-    public String getContactExpediteur() {
-        return contactExpediteur;
+    public String getContact() {
+        return contact;
     }
 
-    public void setContactExpediteur(String contactExpediteur) {
-        this.contactExpediteur = contactExpediteur;
+    public void setContact(String contact) {
+        this.contact = contact;
     }
 
     public Compagnies getCompagnie() {
@@ -49,22 +47,6 @@ public class PassagerRequest {
 
     public void setCompagnie(Compagnies compagnie) {
         this.compagnie = compagnie;
-    }
-
-    public String getNomCompletDestinataire() {
-        return nomCompletDestinataire;
-    }
-
-    public void setNomCompletDestinataire(String nomCompletDestinataire) {
-        this.nomCompletDestinataire = nomCompletDestinataire;
-    }
-
-    public String getContactDestinataire() {
-        return contactDestinataire;
-    }
-
-    public void setContactDestinataire(String contactDestinataire) {
-        this.contactDestinataire = contactDestinataire;
     }
 
     public double getPoidsApporte() {

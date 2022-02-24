@@ -2,9 +2,16 @@ package com.bluerizon.transport.controller;
 
 
 import com.bluerizon.transport.dao.CompagniesDao;
+import com.bluerizon.transport.dao.UserCompagnieDao;
+import com.bluerizon.transport.dao.UsersDao;
 import com.bluerizon.transport.entity.Compagnies;
+import com.bluerizon.transport.entity.UserCompagnies;
+import com.bluerizon.transport.entity.UserPK;
+import com.bluerizon.transport.entity.Users;
 import com.bluerizon.transport.exception.NotFoundRequestException;
 import com.bluerizon.transport.response.ResponseCompagniePage;
+import com.bluerizon.transport.security.CurrentUser;
+import com.bluerizon.transport.security.UserPrincipal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
@@ -35,6 +42,12 @@ public class CompagniesController {
     @Autowired
     private CompagniesDao compagniesDao;
 
+    @Autowired
+    private UserCompagnieDao userCompagnieDao;
+
+    @Autowired
+    private UsersDao usersDao;
+
 
     @RequestMapping(value = { "/compagnie/{id}" }, method = { RequestMethod.GET })
     @ResponseStatus(HttpStatus.OK)
@@ -58,6 +71,32 @@ public class CompagniesController {
     @ResponseStatus(HttpStatus.OK)
     public Compagnies save(@Validated @RequestBody final Compagnies request) {
         return this.compagniesDao.save(request);
+    }
+
+    @RequestMapping(value = { "/user_connect_compagnie" }, method = { RequestMethod.POST })
+    @ResponseStatus(HttpStatus.OK)
+    public UserCompagnies save(@Validated @RequestBody final Compagnies request, @CurrentUser UserPrincipal currentUser) {
+
+        Users user = usersDao.findByIdUser(currentUser.getId());
+        Compagnies compagnie = compagniesDao.save(request);
+
+        UserCompagnies userCompagnie= new UserCompagnies();
+        userCompagnie.setUserPK(new UserPK(user, compagnie));
+        List<Users> users;
+        if (user.getRole().getIdRole()!=1){
+            users = usersDao.selectUserSys();
+        } else {
+            users = usersDao.selectUserSys(user.getIdUser());
+        }
+
+        for (Users item :
+                users) {
+            UserCompagnies userSysCompagnie= new UserCompagnies();
+            userSysCompagnie.setUserPK(new UserPK(item, compagnie));
+            this.userCompagnieDao.save(userSysCompagnie);
+        }
+
+        return this.userCompagnieDao.save(userCompagnie);
     }
 
     @RequestMapping(value = { "/compagnie/{id}" }, method = { RequestMethod.PUT })

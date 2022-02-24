@@ -5,8 +5,11 @@ import com.bluerizon.transport.dao.*;
 import com.bluerizon.transport.entity.*;
 import com.bluerizon.transport.exception.NotFoundRequestException;
 import com.bluerizon.transport.requeste.UserCompagnieRequest;
+import com.bluerizon.transport.requeste.UserCompagniesRequest;
 import com.bluerizon.transport.response.ResponseUserCompagniePage;
 import com.bluerizon.transport.response.ResponseUserCompagniePage;
+import com.bluerizon.transport.security.CurrentUser;
+import com.bluerizon.transport.security.UserPrincipal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
@@ -37,6 +40,9 @@ public class UserCompagniesController {
     @Value("${app.url_user_compagnies_page}")
     private String url_user_compagnies_page;
 
+    @Value("${app.url_user_connect_compagnies_page}")
+    private String url_user_connect_compagnies_page;
+
     @Value("${app.url_user_compagnie_search_page}")
     private String url_user_compagnie_search_page;
 
@@ -46,6 +52,9 @@ public class UserCompagniesController {
     @Value("${app.url_user_compagnies_search_page}")
     private String url_user_compagnies_search_page;
 
+    @Value("${app.url_user_connect_compagnies_search_page}")
+    private String url_user_connect_compagnies_search_page;
+
     @Autowired
     private UserCompagnieDao userCompagnieDao;
 
@@ -54,6 +63,9 @@ public class UserCompagniesController {
 
     @Autowired
     private UsersDao usersDao;
+
+    @Autowired
+    private RolesDao rolesDao;
     
     @RequestMapping(value = { "/user_compagnie_no_deleted" }, method = { RequestMethod.GET })
     @ResponseStatus(HttpStatus.OK)
@@ -79,7 +91,7 @@ public class UserCompagniesController {
         userInit.setPassword(request.getPassword());
         userInit.setTelephone(request.getTelephone());
         userInit.setAdresse(request.getAdresse());
-        userInit.setRole(request.getRole());
+        userInit.setRole(rolesDao.findByIdRole(request.getRole().getIdRole()));
         userInit.setExpirer(request.getExpirer());
         userInit.setNbrCompagnie(request.getNbrCompagnie());
         userInit.setActive(request.isActive());
@@ -89,6 +101,19 @@ public class UserCompagniesController {
 
         UserCompagnies userCompagnie= new UserCompagnies();
         userCompagnie.setUserPK(new UserPK(userSave, compagnie));
+
+        return this.userCompagnieDao.save(userCompagnie);
+    }
+
+    @RequestMapping(value = { "/user_compagnie_add" }, method = { RequestMethod.POST })
+    @ResponseStatus(HttpStatus.OK)
+    public UserCompagnies add(@Validated @RequestBody final UserCompagniesRequest request) {
+
+        Users user = usersDao.findByIdUser(request.getUser().getIdUser());
+        Compagnies compagnie = compagniesDao.findByIdCompagnie(request.getCompagnie().getIdCompagnie());
+
+        UserCompagnies userCompagnie= new UserCompagnies();
+        userCompagnie.setUserPK(new UserPK(user, compagnie));
 
         return this.userCompagnieDao.save(userCompagnie);
     }
@@ -106,7 +131,7 @@ public class UserCompagniesController {
         userInit.setPassword(request.getPassword());
         userInit.setTelephone(request.getTelephone());
         userInit.setAdresse(request.getAdresse());
-        userInit.setRole(request.getRole());
+        userInit.setRole(rolesDao.findByIdRole(request.getRole().getIdRole()));
         userInit.setExpirer(request.getExpirer());
         userInit.setNbrCompagnie(request.getNbrCompagnie());
         userInit.setActive(request.isActive());
@@ -280,6 +305,58 @@ public class UserCompagniesController {
         return userCompagniePage;
     }
 
+    @RequestMapping(value ="/user_connect_compagnies_page/{page}", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseUserCompagniePage selectUserConnectCompagniesPage(@PathVariable(value = "page") int page,
+                                                                     @CurrentUser UserPrincipal currentUser) {
+
+        Pageable pageable = PageRequest.of(page - 1, page_size, sortByCreatedDesc());
+
+        Users user = usersDao.findByIdUser(currentUser.getId());
+        List<UserCompagnies> userCompagnies = this.userCompagnieDao.findByUser(user, pageable);
+
+        ResponseUserCompagniePage userCompagniePage = new ResponseUserCompagniePage();
+
+        Long total = this.userCompagnieDao.countByUser(user);
+        Long lastPage;
+
+        if (total > 0){
+            userCompagniePage.setTotal(total);
+            userCompagniePage.setPer_page(page_size);
+            userCompagniePage.setCurrent_page(page);
+            if (total % page_size == 0){
+                lastPage = total/page_size;
+            } else {
+                lastPage = (total/page_size)+1;
+
+            }
+            userCompagniePage.setLast_page(lastPage);
+            userCompagniePage.setFirst_page_url(url_user_connect_compagnies_page+"/"+1);
+            userCompagniePage.setLast_page_url(url_user_connect_compagnies_page+"/"+lastPage);
+            if (page >= lastPage){
+
+            }else {
+                userCompagniePage.setNext_page_url(url_user_connect_compagnies_page+"/"+(page+1));
+            }
+
+            if (page == 1){
+                userCompagniePage.setPrev_page_url(null);
+                userCompagniePage.setFrom(1L);
+                userCompagniePage.setTo(Long.valueOf(page_size));
+            } else {
+                userCompagniePage.setPrev_page_url(url_user_connect_compagnies_page+"/"+(page-1));
+                userCompagniePage.setFrom(1L + (Long.valueOf(page_size)*(page -1)));
+                userCompagniePage.setTo(Long.valueOf(page_size) * page);
+            }
+            userCompagniePage.setPath(path);
+            userCompagniePage.setData(userCompagnies);
+        }else {
+            userCompagniePage.setTotal(0L);
+        }
+
+        return userCompagniePage;
+    }
+
 
     @RequestMapping(value = "/user_compagnie_search_page/{page}/{s}", method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
@@ -424,6 +501,59 @@ public class UserCompagniesController {
                 userCompagniePage.setTo(Long.valueOf(page_size));
             } else {
                 userCompagniePage.setPrev_page_url(url_user_compagnies_search_page+id+"/"+(page-1)+"/"+s);
+                userCompagniePage.setFrom(1L + (Long.valueOf(page_size)*(page -1)));
+                userCompagniePage.setTo(Long.valueOf(page_size) * page);
+            }
+
+            userCompagniePage.setPath(path);
+            userCompagniePage.setData(userCompagnies);
+
+        }else {
+            userCompagniePage.setTotal(0L);
+        }
+
+        return userCompagniePage;
+    }
+
+    @RequestMapping(value = "/user_connect_compagnies_search_page/{page}/{s}", method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseUserCompagniePage searchUserConnectCompagniesPage(@PathVariable(value = "page") int page,
+                                                            @PathVariable(value = "s") String s,
+                                                              @CurrentUser UserPrincipal currentUser){
+
+        Pageable pageable = PageRequest.of(page - 1, page_size, sortByCreatedDesc());
+        Users user = usersDao.findByIdUser(currentUser.getId());
+        List<UserCompagnies> userCompagnies = this.userCompagnieDao.rechercheUser(user, s, pageable);
+
+        ResponseUserCompagniePage userCompagniePage = new ResponseUserCompagniePage();
+        Long total = this.userCompagnieDao.countRechercheUser(user, s);
+        Long lastPage;
+
+        if (total > 0){
+            userCompagniePage.setTotal(total);
+            userCompagniePage.setPer_page(page_size);
+            userCompagniePage.setCurrent_page(page);
+
+            if (total %page_size == 0){
+                lastPage = total/page_size;
+            } else {
+                lastPage = (total/page_size)+1;
+            }
+            userCompagniePage.setLast_page(lastPage);
+            userCompagniePage.setFirst_page_url(url_user_compagnies_search_page+"/"+1+"/"+s);
+            userCompagniePage.setLast_page_url(url_user_compagnies_search_page+"/"+lastPage+"/"+s);
+            if (page >= lastPage){
+
+            }else {
+                userCompagniePage.setNext_page_url(url_user_compagnies_search_page+"/"+(page+1)+"/"+s);
+            }
+
+            if (page == 1){
+                userCompagniePage.setPrev_page_url(null);
+                userCompagniePage.setFrom(1L);
+                userCompagniePage.setTo(Long.valueOf(page_size));
+            } else {
+                userCompagniePage.setPrev_page_url(url_user_compagnies_search_page+"/"+(page-1)+"/"+s);
                 userCompagniePage.setFrom(1L + (Long.valueOf(page_size)*(page -1)));
                 userCompagniePage.setTo(Long.valueOf(page_size) * page);
             }

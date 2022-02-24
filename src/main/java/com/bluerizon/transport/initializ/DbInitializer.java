@@ -1,13 +1,11 @@
 package com.bluerizon.transport.initializ;
 
 import com.bluerizon.transport.entity.Pays;
-import com.bluerizon.transport.entity.Privileges;
 import com.bluerizon.transport.entity.Roles;
 import com.bluerizon.transport.entity.Users;
 import com.bluerizon.transport.helper.Helpers;
 import com.bluerizon.transport.helper.ReadeJsonFiles;
 import com.bluerizon.transport.repository.PaysRepository;
-import com.bluerizon.transport.repository.PrivilegesRepository;
 import com.bluerizon.transport.repository.RolesRepository;
 import com.bluerizon.transport.repository.UsersRepository;
 import com.bluerizon.transport.response.Countries;
@@ -27,17 +25,15 @@ public class DbInitializer implements CommandLineRunner {
     private UsersRepository usersRepository;
     private RolesRepository rolesRepository;
     private PaysRepository paysRepository;
-    private PrivilegesRepository privilegesRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public DbInitializer(UsersRepository usersRepository, RolesRepository rolesRepository, PaysRepository paysRepository,
-                         PrivilegesRepository privilegesRepository) {
+    public DbInitializer(UsersRepository usersRepository, RolesRepository rolesRepository,
+                         PaysRepository paysRepository) {
         this.usersRepository = usersRepository;
         this.rolesRepository = rolesRepository;
         this.paysRepository = paysRepository;
-        this.privilegesRepository = privilegesRepository;
     }
 
     @Override
@@ -101,14 +97,6 @@ public class DbInitializer implements CommandLineRunner {
         }
 
         // ---------- cretaion des privileges------------
-
-        Collection<Roles> roles = new ArrayList<>();
-        roles.add(role1);
-        roles.add(role2);
-        roles.add(role3);
-        roles.add(role4);
-        roles.add(role5);
-        roles.add(role6);
 
         System.out.println(" -- insert Super admin");
 

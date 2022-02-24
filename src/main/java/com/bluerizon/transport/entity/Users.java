@@ -54,7 +54,7 @@ public class Users implements Serializable {
     @Column(name = "telephone")
     private String telephone;
     @Column(name = "avatar")
-    private String avatar;
+    private String avatar= "avatar.png";
     @JoinColumn(name = "role", referencedColumnName = "idRole", nullable = false)
     @ManyToOne
     private Roles role;
@@ -69,7 +69,7 @@ public class Users implements Serializable {
     @Version
     @Basic(optional = false)
     @Column(nullable = false)
-    private Long version;
+    private int version;
     @CreatedDate
     @Column(name = "created_at", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
@@ -198,11 +198,11 @@ public class Users implements Serializable {
         this.deleted = deleted;
     }
 
-    public Long getVersion() {
+    public Integer getVersion() {
         return version;
     }
 
-    public void setVersion(Long version) {
+    public void setVersion(Integer version) {
         this.version = version;
     }
 

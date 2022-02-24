@@ -1,16 +1,12 @@
 package com.bluerizon.transport.security;
 
-import com.bluerizon.transport.entity.Privileges;
-import com.bluerizon.transport.entity.Roles;
 import com.bluerizon.transport.entity.Users;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 
 public class UserPrincipal implements UserDetails {

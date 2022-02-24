@@ -28,6 +28,11 @@ public class ClientsService implements ClientsDao {
     }
 
     @Override
+    public Clients findByContact(String contact) {
+        return repository.findByContact(contact);
+    }
+
+    @Override
     public List<Clients> findByDeletedFalseOrderByIdClientDesc() {
         return repository.findByDeletedFalseOrderByIdClientDesc();
     }
@@ -70,6 +75,11 @@ public class ClientsService implements ClientsDao {
     @Override
     public Long countByDeletedFalse() {
         return repository.countByDeletedFalse();
+    }
+
+    @Override
+    public Long count() {
+        return repository.count();
     }
 
     @Override

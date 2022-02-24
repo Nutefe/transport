@@ -74,6 +74,9 @@ public class BilletPassagersController {
     @Autowired
     private TarifsDao tarifsDao;
 
+    @Autowired
+    private CompagniesDao compagniesDao;
+
     @RequestMapping(value = { "/billet_passager/{id}" }, method = { RequestMethod.GET })
     @ResponseStatus(HttpStatus.OK)
     public BilletPassagers selectOne(@PathVariable("id") final Long id) {
@@ -96,11 +99,18 @@ public class BilletPassagersController {
     @ResponseStatus(HttpStatus.OK)
     public BilletPassagers save(@Validated @RequestBody final PassagerRequest request, @CurrentUser UserPrincipal currentUser) {
 
-        Clients client = new Clients();
-        client.setCompagnie(request.getCompagnie());
-        client.setNomComplet(request.getNomCompletExpediteur());
-        client.setContact(request.getContactDestinataire());
-        Clients clientSave = clientsDao.save(client);
+        Clients clientInit = clientsDao.findByContact(request.getContact());
+        Clients clientSave;
+        if (clientInit==null){
+            Clients client = new Clients();
+            client.setCompagnie(compagniesDao.findByIdCompagnie(request.getCompagnie().getIdCompagnie()));
+            client.setNomComplet(request.getNomComplet());
+            client.setContact(request.getContact());
+            client.setCode("CL-"+clientsDao.count());
+            clientSave = clientsDao.save(client);
+        }else {
+            clientSave = clientInit;
+        }
 
         BilletPassagers billetPassager = new BilletPassagers();
         if (clientSave!=null){
@@ -111,7 +121,7 @@ public class BilletPassagersController {
             Users user = usersDao.findByIdUser(currentUser.getId());
 
             billetPassager.setUser(user);
-            billetPassager.setVoyage(request.getVoyage());
+            billetPassager.setVoyage(voyagesDao.findByIdVoyage(request.getVoyage().getIdVoyage()));
             billetPassager.setPoidsAutorise(1);
             billetPassager.setPoidsApporte(request.getPoidsApporte());
             billetPassager.setTarif(tarif);
@@ -129,8 +139,8 @@ public class BilletPassagersController {
 
         Clients clientInit = clientsDao.findByIdClient(billetPassagersInit.getClient().getIdClient());
         clientInit.setCompagnie(request.getCompagnie());
-        clientInit.setNomComplet(request.getNomCompletExpediteur());
-        clientInit.setContact(request.getContactDestinataire());
+        clientInit.setNomComplet(request.getNomComplet());
+        clientInit.setContact(request.getContact());
         Clients clientSave = clientsDao.save(clientInit);
 
         if (clientSave!=null){
@@ -139,7 +149,7 @@ public class BilletPassagersController {
             TarifPK tarifPK = new TarifPK(bus, ligne);
             Tarifs tarif = tarifsDao.findByTarifPK(tarifPK);
 
-            billetPassagersInit.setVoyage(request.getVoyage());
+            billetPassagersInit.setVoyage(voyagesDao.findByIdVoyage(request.getVoyage().getIdVoyage()));
             billetPassagersInit.setPoidsAutorise(1);
             billetPassagersInit.setPoidsApporte(request.getPoidsApporte());
             billetPassagersInit.setTarif(tarif);

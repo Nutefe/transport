@@ -76,13 +76,15 @@ public interface BilletColisRepository extends JpaRepository<BilletColis, Long> 
     @Query("SELECT COUNT(b) FROM BilletColis b WHERE b.deleted = false AND b.client=?1")
     Long countByClient(Clients client);
 
-    @Query("SELECT COUNT(b) FROM BilletColis b WHERE b.deleted = false AND b.user=:user AND " +
-            "(b.nomComplet LIKE CONCAT('%',:search,'%') OR " +
-            "b.contact LIKE CONCAT('%',:search,'%') OR " +
+    @Query("SELECT COUNT(b) FROM BilletColis b WHERE (b.nomComplet LIKE CONCAT('%',:search,'%') OR " +
+            "b.contact LIKE CONCAT('%',:search,'%') OR "+
+            "b.user.username LIKE CONCAT('%',:search,'%') OR "+
+            "b.user.nom LIKE CONCAT('%',:search,'%') OR " +
+            "b.user.prenom LIKE CONCAT('%',:search,'%') OR " +
             "b.client.nomComplet LIKE CONCAT('%',:search,'%') OR " +
             "b.client.contact LIKE CONCAT('%',:search,'%') OR " +
             "b.tarif.tarifPK.bus.numeroMatricule LIKE CONCAT('%',:search,'%') OR " +
-            "b.tarif.tarifPK.bus.typeBus.libelle LIKE CONCAT('%',:search,'%'))")
+            "b.tarif.tarifPK.bus.typeBus.libelle LIKE CONCAT('%',:search,'%')) AND b.deleted = false ORDER BY b.idBillet DESC")
     Long countRecherche(String search);
 
     @Query("SELECT COUNT(b) FROM BilletColis b WHERE b.deleted = false AND b.user=:user AND " +

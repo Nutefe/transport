@@ -6,7 +6,6 @@
 package com.bluerizon.transport.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -23,28 +22,15 @@ import java.util.Objects;
  */
 
 @Entity
-@Table(name = "clients")
+@Table(name = "voyageLignes")
 @XmlRootElement
 @JsonIgnoreProperties(value = {"createdAt", "updatedAt", "deleted", "version"}, allowGetters = true)
 @EntityListeners(AuditingEntityListener.class)
-public class Clients implements Serializable {
+public class VoyageLignes implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy= GenerationType.AUTO, generator="native")
-    @GenericGenerator(name = "native",strategy = "native")
-    @Basic(optional = false)
-    @Column(name = "idClient")
-    private Long idClient;
-    @JoinColumn(name = "compagnie", referencedColumnName = "idCompagnie", nullable = false)
-    @ManyToOne
-    private Compagnies compagnie;
-    @Column(name = "code", unique = true, nullable = false)
-    private String code;
-    @Column(name = "nomComplet", nullable = false)
-    private String nomComplet;
-    @Column(name = "contact", unique = true)
-    private String contact;
+    @EmbeddedId
+    protected VoyagePK voyagePK;
     @Column(name = "deleted")
     private boolean deleted = false;
     @Version
@@ -60,51 +46,19 @@ public class Clients implements Serializable {
     @LastModifiedDate
     private Date updatedAt;
 
-    public Clients() {
+    public VoyageLignes() {
     }
 
-    public Clients(Long idClient) {
-        this.idClient = idClient;
+    public VoyageLignes(VoyagePK voyagePK) {
+        this.voyagePK = voyagePK;
     }
 
-    public Long getIdClient() {
-        return idClient;
+    public VoyagePK getVoyagePK() {
+        return voyagePK;
     }
 
-    public void setIdClient(Long idClient) {
-        this.idClient = idClient;
-    }
-
-    public Compagnies getCompagnie() {
-        return compagnie;
-    }
-
-    public void setCompagnie(Compagnies compagnie) {
-        this.compagnie = compagnie;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    public String getNomComplet() {
-        return nomComplet;
-    }
-
-    public void setNomComplet(String nomComplet) {
-        this.nomComplet = nomComplet;
-    }
-
-    public String getContact() {
-        return contact;
-    }
-
-    public void setContact(String contact) {
-        this.contact = contact;
+    public void setVoyagePK(VoyagePK voyagePK) {
+        this.voyagePK = voyagePK;
     }
 
     public boolean isDeleted() {
@@ -143,23 +97,19 @@ public class Clients implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Clients clients = (Clients) o;
-        return deleted == clients.deleted && Objects.equals(idClient, clients.idClient) && Objects.equals(compagnie, clients.compagnie) && Objects.equals(code, clients.code) && Objects.equals(nomComplet, clients.nomComplet) && Objects.equals(contact, clients.contact) && Objects.equals(version, clients.version) && Objects.equals(createdAt, clients.createdAt) && Objects.equals(updatedAt, clients.updatedAt);
+        VoyageLignes that = (VoyageLignes) o;
+        return deleted == that.deleted && Objects.equals(voyagePK, that.voyagePK) && Objects.equals(version, that.version) && Objects.equals(createdAt, that.createdAt) && Objects.equals(updatedAt, that.updatedAt);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(idClient, compagnie, code, nomComplet, contact, deleted, version, createdAt, updatedAt);
+        return Objects.hash(voyagePK, deleted, version, createdAt, updatedAt);
     }
 
     @Override
     public String toString() {
-        return "Clients{" +
-                "idClient=" + idClient +
-                ", compagnie=" + compagnie +
-                ", code='" + code + '\'' +
-                ", nomComplet='" + nomComplet + '\'' +
-                ", contact='" + contact + '\'' +
+        return "VoyageLignes{" +
+                "voyagePK=" + voyagePK +
                 ", deleted=" + deleted +
                 ", version=" + version +
                 ", createdAt=" + createdAt +

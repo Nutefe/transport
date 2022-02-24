@@ -5,6 +5,7 @@ import com.bluerizon.transport.dao.*;
 import com.bluerizon.transport.entity.*;
 import com.bluerizon.transport.exception.NotFoundRequestException;
 import com.bluerizon.transport.requeste.VoyageRequest;
+import com.bluerizon.transport.response.ResponseVoyage;
 import com.bluerizon.transport.response.ResponseVoyagePage;
 import com.bluerizon.transport.response.ResponseVoyagePage;
 import com.bluerizon.transport.security.CurrentUser;
@@ -18,7 +19,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api")
@@ -60,6 +64,15 @@ public class VoyagesController {
     @Autowired
     private UsersDao usersDao;
 
+    @Autowired
+    private UserCompagnieDao userCompagnieDao;
+
+    @Autowired
+    private BusDao busDao;
+
+    @Autowired
+    private VoyageLignesDao voyageLignesDao;
+
 
     @RequestMapping(value = { "/voyage/{id}" }, method = { RequestMethod.GET })
     @ResponseStatus(HttpStatus.OK)
@@ -82,29 +95,62 @@ public class VoyagesController {
 
     @RequestMapping(value = { "/voyage" }, method = { RequestMethod.POST })
     @ResponseStatus(HttpStatus.OK)
-    public Voyages save(@Validated @RequestBody final VoyageRequest request, @CurrentUser UserPrincipal currentUser) {
+    public ResponseVoyage save(@Validated @RequestBody final VoyageRequest request, @CurrentUser UserPrincipal currentUser) {
         Compagnies compagnie = compagniesDao.findByIdCompagnie(request.getCompagnie().getIdCompagnie());
         Users user = usersDao.findByIdUser(currentUser.getId());
         Lignes ligne = lignesDao.findByIdLigne(request.getLigne().getIdLigne());
+        UserCompagnies userCompagnies = userCompagnieDao.findByUserPK(new UserPK(user, compagnie));
         Voyages voyage = new Voyages();
-        voyage.setUserCompagnie(new UserCompagnies(new UserPK(user, compagnie)));
+        voyage.setUserCompagnie(userCompagnies);
         voyage.setLigne(ligne);
-        voyage.setBus(request.getBus());
         voyage.setDateDepart(request.getDateDepart());
         voyage.setDateArriver(request.getDateArriver());
-        return this.voyagesDao.save(voyage);
+        Voyages voyageSave = this.voyagesDao.save(voyage);
+        List<Bus> list = new ArrayList<>();
+        if (voyageSave!=null){
+            List<VoyageLignes> voyageLignes = new ArrayList<>();
+            for (Bus item :
+                    request.getBus()) {
+                Bus bus = busDao.findByIdBus(item.getIdBus());
+                list.add(bus);
+                VoyageLignes voyageLigne = new VoyageLignes();
+                voyageLigne.setVoyagePK(new VoyagePK(voyageSave, bus));
+                voyageLignes.add(voyageLigne);
+            }
+            voyageLignesDao.save(voyageLignes);
+        }
+        return new ResponseVoyage(voyageSave, list);
     }
 
     @RequestMapping(value = { "/voyage/{id}" }, method = { RequestMethod.PUT })
     @ResponseStatus(HttpStatus.OK)
-    public Voyages update(@PathVariable("id") final Long id, @Validated @RequestBody final VoyageRequest request) {
+    public ResponseVoyage update(@PathVariable("id") final Long id, @Validated @RequestBody final VoyageRequest request, @CurrentUser UserPrincipal currentUser) {
         Voyages voyageInit = this.voyagesDao.findById(id).orElseThrow(() -> new NotFoundRequestException("Objet dont l'id "+id+" n'existe pas!"));
+        Compagnies compagnie = compagniesDao.findByIdCompagnie(request.getCompagnie().getIdCompagnie());
+        Users user = usersDao.findByIdUser(currentUser.getId());
         Lignes ligne = lignesDao.findByIdLigne(request.getLigne().getIdLigne());
+        UserCompagnies userCompagnies = userCompagnieDao.findByUserPK(new UserPK(user, compagnie));
+        voyageInit.setUserCompagnie(userCompagnies);
         voyageInit.setLigne(ligne);
-        voyageInit.setBus(request.getBus());
         voyageInit.setDateDepart(request.getDateDepart());
         voyageInit.setDateArriver(request.getDateArriver());
-        return this.voyagesDao.save(voyageInit);
+        Voyages voyageSave = this.voyagesDao.save(voyageInit);
+        List<Bus> list = new ArrayList<>();
+        if (voyageSave!=null){
+            List<VoyageLignes> lignes = voyageLignesDao.findByVoyage(voyageSave);
+            voyageLignesDao.delete(lignes);
+            List<VoyageLignes> voyageLignes = new ArrayList<>();
+            for (Bus item :
+                    request.getBus()) {
+                Bus bus = busDao.findByIdBus(item.getIdBus());
+                list.add(bus);
+                VoyageLignes voyageLigne = new VoyageLignes();
+                voyageLigne.setVoyagePK(new VoyagePK(voyageSave, bus));
+                voyageLignes.add(voyageLigne);
+            }
+            voyageLignesDao.save(voyageLignes);
+        }
+        return new ResponseVoyage(voyageSave, list);
     }
 
     @RequestMapping(value ="/voyage_page/{page}", method = RequestMethod.GET)
@@ -114,6 +160,17 @@ public class VoyagesController {
         Pageable pageable = PageRequest.of(page - 1, page_size, sortByCreatedDesc());
 
         List<Voyages> voyages = this.voyagesDao.findAllByDeletedFalse(pageable);
+        List<ResponseVoyage> responseVoyages = new ArrayList<>();
+        for (Voyages item :
+                voyages) {
+            List<VoyageLignes> voyageLignes = voyageLignesDao.findByVoyage(item);
+            List<Bus> bus = new ArrayList<>();
+            for (VoyageLignes vitem:
+                 voyageLignes) {
+                bus.add(vitem.getVoyagePK().getBus());
+            }
+            responseVoyages.add(new ResponseVoyage(item, bus));
+        }
 
         ResponseVoyagePage voyagePage = new ResponseVoyagePage();
 
@@ -149,7 +206,7 @@ public class VoyagesController {
                 voyagePage.setTo(Long.valueOf(page_size) * page);
             }
             voyagePage.setPath(path);
-            voyagePage.setData(voyages);
+            voyagePage.setData(responseVoyages);
         }else {
             voyagePage.setTotal(0L);
         }
@@ -166,6 +223,17 @@ public class VoyagesController {
 
         Compagnies compagnie = compagniesDao.findByIdCompagnie(id);
         List<Voyages> voyages = this.voyagesDao.findByCompagnie(compagnie,pageable);
+        List<ResponseVoyage> responseVoyages = new ArrayList<>();
+        for (Voyages item :
+                voyages) {
+            List<VoyageLignes> voyageLignes = voyageLignesDao.findByVoyage(item);
+            List<Bus> bus = new ArrayList<>();
+            for (VoyageLignes vitem:
+                    voyageLignes) {
+                bus.add(vitem.getVoyagePK().getBus());
+            }
+            responseVoyages.add(new ResponseVoyage(item, bus));
+        }
 
         ResponseVoyagePage voyagePage = new ResponseVoyagePage();
 
@@ -201,7 +269,7 @@ public class VoyagesController {
                 voyagePage.setTo(Long.valueOf(page_size) * page);
             }
             voyagePage.setPath(path);
-            voyagePage.setData(voyages);
+            voyagePage.setData(responseVoyages);
         }else {
             voyagePage.setTotal(0L);
         }
@@ -218,6 +286,17 @@ public class VoyagesController {
 
         Lignes ligne = lignesDao.findByIdLigne(id);
         List<Voyages> voyages = this.voyagesDao.findByLigne(ligne, pageable);
+        List<ResponseVoyage> responseVoyages = new ArrayList<>();
+        for (Voyages item :
+                voyages) {
+            List<VoyageLignes> voyageLignes = voyageLignesDao.findByVoyage(item);
+            List<Bus> bus = new ArrayList<>();
+            for (VoyageLignes vitem:
+                    voyageLignes) {
+                bus.add(vitem.getVoyagePK().getBus());
+            }
+            responseVoyages.add(new ResponseVoyage(item, bus));
+        }
 
         ResponseVoyagePage voyagePage = new ResponseVoyagePage();
 
@@ -253,7 +332,7 @@ public class VoyagesController {
                 voyagePage.setTo(Long.valueOf(page_size) * page);
             }
             voyagePage.setPath(path);
-            voyagePage.setData(voyages);
+            voyagePage.setData(responseVoyages);
         }else {
             voyagePage.setTotal(0L);
         }
@@ -269,6 +348,17 @@ public class VoyagesController {
 
         Pageable pageable = PageRequest.of(page - 1, page_size, sortByCreatedDesc());
         List<Voyages> voyages = this.voyagesDao.recherche(s, pageable);
+        List<ResponseVoyage> responseVoyages = new ArrayList<>();
+        for (Voyages item :
+                voyages) {
+            List<VoyageLignes> voyageLignes = voyageLignesDao.findByVoyage(item);
+            List<Bus> bus = new ArrayList<>();
+            for (VoyageLignes vitem:
+                    voyageLignes) {
+                bus.add(vitem.getVoyagePK().getBus());
+            }
+            responseVoyages.add(new ResponseVoyage(item, bus));
+        }
 
         ResponseVoyagePage voyagePage = new ResponseVoyagePage();
         Long total = this.voyagesDao.countRecherche(s);
@@ -304,7 +394,7 @@ public class VoyagesController {
             }
 
             voyagePage.setPath(path);
-            voyagePage.setData(voyages);
+            voyagePage.setData(responseVoyages);
 
         }else {
             voyagePage.setTotal(0L);
@@ -322,6 +412,17 @@ public class VoyagesController {
         Pageable pageable = PageRequest.of(page - 1, page_size, sortByCreatedDesc());
         Compagnies compagnie = compagniesDao.findByIdCompagnie(id);
         List<Voyages> voyages = this.voyagesDao.rechercheCompagnie(compagnie, s, pageable);
+        List<ResponseVoyage> responseVoyages = new ArrayList<>();
+        for (Voyages item :
+                voyages) {
+            List<VoyageLignes> voyageLignes = voyageLignesDao.findByVoyage(item);
+            List<Bus> bus = new ArrayList<>();
+            for (VoyageLignes vitem:
+                    voyageLignes) {
+                bus.add(vitem.getVoyagePK().getBus());
+            }
+            responseVoyages.add(new ResponseVoyage(item, bus));
+        }
 
         ResponseVoyagePage voyagePage = new ResponseVoyagePage();
         Long total = this.voyagesDao.countRechercheCompagnie(compagnie, s);
@@ -357,7 +458,7 @@ public class VoyagesController {
             }
 
             voyagePage.setPath(path);
-            voyagePage.setData(voyages);
+            voyagePage.setData(responseVoyages);
 
         }else {
             voyagePage.setTotal(0L);
@@ -375,6 +476,17 @@ public class VoyagesController {
         Pageable pageable = PageRequest.of(page - 1, page_size, sortByCreatedDesc());
         Lignes ligne = lignesDao.findByIdLigne(id);
         List<Voyages> voyages = this.voyagesDao.rechercheLigne(ligne, s, pageable);
+        List<ResponseVoyage> responseVoyages = new ArrayList<>();
+        for (Voyages item :
+                voyages) {
+            List<VoyageLignes> voyageLignes = voyageLignesDao.findByVoyage(item);
+            List<Bus> bus = new ArrayList<>();
+            for (VoyageLignes vitem:
+                    voyageLignes) {
+                bus.add(vitem.getVoyagePK().getBus());
+            }
+            responseVoyages.add(new ResponseVoyage(item, bus));
+        }
 
         ResponseVoyagePage voyagePage = new ResponseVoyagePage();
         Long total = this.voyagesDao.countRechercheLigne(ligne, s);
@@ -410,7 +522,7 @@ public class VoyagesController {
             }
 
             voyagePage.setPath(path);
-            voyagePage.setData(voyages);
+            voyagePage.setData(responseVoyages);
 
         }else {
             voyagePage.setTotal(0L);

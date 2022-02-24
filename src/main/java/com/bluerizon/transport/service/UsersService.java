@@ -58,6 +58,11 @@ public class UsersService implements UsersDao {
     }
 
     @Override
+    public List<Users> selectUserSys() {
+        return repository.selectUserSys();
+    }
+
+    @Override
     public List<Users> selectUserDirecteur(Pageable pageable) {
         return repository.selectUserDirecteur(pageable);
     }

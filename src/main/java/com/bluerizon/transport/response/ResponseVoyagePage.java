@@ -17,7 +17,7 @@ public class ResponseVoyagePage {
     private String path;
     private Long from;
     private Long to;
-    private List<Voyages> data;
+    private List<ResponseVoyage> data;
 
     public ResponseVoyagePage() {
     }
@@ -110,11 +110,11 @@ public class ResponseVoyagePage {
         this.to = to;
     }
 
-    public List<Voyages> getData() {
+    public List<ResponseVoyage> getData() {
         return data;
     }
 
-    public void setData(List<Voyages> data) {
+    public void setData(List<ResponseVoyage> data) {
         this.data = data;
     }
 }

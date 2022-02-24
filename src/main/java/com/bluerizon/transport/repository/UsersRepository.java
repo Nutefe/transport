@@ -33,6 +33,9 @@ public interface UsersRepository extends JpaRepository<Users, Long> {
     @Query("SELECT u FROM Users u WHERE u.role.idRole = 1 AND u.deleted = false AND u.idUser != :idUser")
     List<Users> selectUserSys(Long idUser);
 
+    @Query("SELECT u FROM Users u WHERE u.role.idRole = 1 AND u.deleted = false")
+    List<Users> selectUserSys();
+
     @Query("SELECT u FROM Users u WHERE u.role.idRole = 2 AND u.deleted = false")
     List<Users> selectUserDirecteur(Pageable pageable);
 

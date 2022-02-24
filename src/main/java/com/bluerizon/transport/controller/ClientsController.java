@@ -75,6 +75,7 @@ public class ClientsController {
     public Clients save(@Validated @RequestBody final Clients request) {
         Compagnies compagnie = compagniesDao.findByIdCompagnie(request.getCompagnie().getIdCompagnie());
         request.setCompagnie(compagnie);
+        request.setCode("CL-"+(clientsDao.count()+1));
         return this.clientsDao.save(request);
     }
 
@@ -86,7 +87,6 @@ public class ClientsController {
         clientInit.setCompagnie(compagnie);
         clientInit.setContact(request.getContact());
         clientInit.setNomComplet(request.getNomComplet());
-        clientInit.setCode(request.getCode());
         return this.clientsDao.save(clientInit);
     }
 

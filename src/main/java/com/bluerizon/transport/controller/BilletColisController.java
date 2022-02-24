@@ -74,6 +74,9 @@ public class BilletColisController {
     @Autowired
     private TarifsDao tarifsDao;
 
+    @Autowired
+    private CompagniesDao compagniesDao;
+
     @RequestMapping(value = { "/billet_colis/{id}" }, method = { RequestMethod.GET })
     @ResponseStatus(HttpStatus.OK)
     public BilletColis selectOne(@PathVariable("id") final Long id) {
@@ -96,11 +99,18 @@ public class BilletColisController {
     @ResponseStatus(HttpStatus.OK)
     public BilletColis save(@Validated @RequestBody final ColisRequest request, @CurrentUser UserPrincipal currentUser) {
 
-        Clients client = new Clients();
-        client.setCompagnie(request.getCompagnie());
-        client.setNomComplet(request.getNomCompletExpediteur());
-        client.setContact(request.getContactDestinataire());
-        Clients clientSave = clientsDao.save(client);
+        Clients clientInit = clientsDao.findByContact(request.getContactExpediteur());
+        Clients clientSave;
+        if (clientInit==null){
+            Clients client = new Clients();
+            client.setCompagnie(compagniesDao.findByIdCompagnie(request.getCompagnie().getIdCompagnie()));
+            client.setNomComplet(request.getNomCompletExpediteur());
+            client.setContact(request.getContactExpediteur());
+            client.setCode("CL-"+clientsDao.count());
+            clientSave = clientsDao.save(client);
+        }else {
+            clientSave = clientInit;
+        }
 
         BilletColis billetColis = new BilletColis();
         if (clientSave!=null){
@@ -111,7 +121,7 @@ public class BilletColisController {
             Users user = usersDao.findByIdUser(currentUser.getId());
 
             billetColis.setUser(user);
-            billetColis.setVoyage(request.getVoyage());
+            billetColis.setVoyage(voyagesDao.findByIdVoyage(request.getVoyage().getIdVoyage()));
             billetColis.setNomComplet(request.getNomCompletDestinataire());
             billetColis.setContact(request.getContactDestinataire());
             billetColis.setPoidsColis(request.getPoidsColis());
@@ -140,7 +150,7 @@ public class BilletColisController {
             TarifPK tarifPK = new TarifPK(bus, ligne);
             Tarifs tarif = tarifsDao.findByTarifPK(tarifPK);
 
-            billetColisInit.setVoyage(request.getVoyage());
+            billetColisInit.setVoyage(voyagesDao.findByIdVoyage(request.getVoyage().getIdVoyage()));
             billetColisInit.setNomComplet(request.getNomCompletDestinataire());
             billetColisInit.setContact(request.getContactDestinataire());
             billetColisInit.setPoidsColis(request.getPoidsColis());

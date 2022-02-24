@@ -75,6 +75,7 @@ public class ArretsController {
     @RequestMapping(value = { "/arret" }, method = { RequestMethod.POST })
     @ResponseStatus(HttpStatus.OK)
     public Arrets save(@Validated @RequestBody final Arrets arrets) {
+        arrets.setVille(villesDao.findByIdVille(arrets.getVille().getIdVille()));
         return this.arretsDao.save(arrets);
     }
 
@@ -84,7 +85,7 @@ public class ArretsController {
         Arrets arretInit = this.arretsDao.findById(id).orElseThrow(() -> new NotFoundRequestException("Objet dont l'id "+id+" n'existe pas!"));
         arretInit.setLibelle(arrets.getLibelle());
         arretInit.setAdresse(arrets.getAdresse());
-        arretInit.setVille(arrets.getVille());
+        arretInit.setVille(villesDao.findByIdVille(arrets.getVille().getIdVille()));
         arretInit.setLatitude(arrets.getLatitude());
         arretInit.setLongitude(arrets.getLongitude());
         arretInit.setGare(arrets.isGare());

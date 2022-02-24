@@ -35,8 +35,6 @@ public class Voyages implements Serializable {
     @Basic(optional = false)
     @Column(name = "idVoyage")
     private Long idVoyage;
-    @OneToMany(fetch = FetchType.EAGER , cascade = CascadeType.ALL)
-    private Set<Bus> bus;
     @JoinColumn(name = "ligne", referencedColumnName = "idLigne", nullable = false)
     @ManyToOne
     private Lignes ligne;
@@ -81,14 +79,6 @@ public class Voyages implements Serializable {
 
     public void setIdVoyage(Long idVoyage) {
         this.idVoyage = idVoyage;
-    }
-
-    public Set<Bus> getBus() {
-        return bus;
-    }
-
-    public void setBus(Set<Bus> bus) {
-        this.bus = bus;
     }
 
     public Lignes getLigne() {
@@ -168,19 +158,18 @@ public class Voyages implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Voyages voyages = (Voyages) o;
-        return terminer == voyages.terminer && deleted == voyages.deleted && Objects.equals(idVoyage, voyages.idVoyage) && Objects.equals(bus, voyages.bus) && Objects.equals(ligne, voyages.ligne) && Objects.equals(userCompagnie, voyages.userCompagnie) && Objects.equals(dateDepart, voyages.dateDepart) && Objects.equals(dateArriver, voyages.dateArriver) && Objects.equals(version, voyages.version) && Objects.equals(createdAt, voyages.createdAt) && Objects.equals(updatedAt, voyages.updatedAt);
+        return terminer == voyages.terminer && deleted == voyages.deleted && Objects.equals(idVoyage, voyages.idVoyage) && Objects.equals(ligne, voyages.ligne) && Objects.equals(userCompagnie, voyages.userCompagnie) && Objects.equals(dateDepart, voyages.dateDepart) && Objects.equals(dateArriver, voyages.dateArriver) && Objects.equals(version, voyages.version) && Objects.equals(createdAt, voyages.createdAt) && Objects.equals(updatedAt, voyages.updatedAt);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(idVoyage, bus, ligne, userCompagnie, dateDepart, dateArriver, terminer, deleted, version, createdAt, updatedAt);
+        return Objects.hash(idVoyage, ligne, userCompagnie, dateDepart, dateArriver, terminer, deleted, version, createdAt, updatedAt);
     }
 
     @Override
     public String toString() {
         return "Voyages{" +
                 "idVoyage=" + idVoyage +
-                ", bus=" + bus +
                 ", ligne=" + ligne +
                 ", userCompagnie=" + userCompagnie +
                 ", dateDepart=" + dateDepart +

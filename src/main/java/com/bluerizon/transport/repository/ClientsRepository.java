@@ -16,6 +16,8 @@ public interface ClientsRepository extends JpaRepository<Clients, Long> {
 
     Clients findByIdClient(final Long id);
 
+    Clients findByContact(final String contact);
+
     List<Clients> findByDeletedFalseOrderByIdClientDesc();
 
     List<Clients> findByDeletedTrueOrderByIdClientDesc();

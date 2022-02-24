@@ -1,6 +1,7 @@
 package com.bluerizon.transport.controller;
 
 
+import com.bluerizon.transport.dao.RolesDao;
 import com.bluerizon.transport.dao.UsersDao;
 import com.bluerizon.transport.entity.Users;
 import com.bluerizon.transport.exception.NotFoundRequestException;
@@ -61,6 +62,9 @@ public class UsersController {
     @Autowired
     private UsersDao usersDao;
 
+    @Autowired
+    private RolesDao rolesDao;
+
     @GetMapping("/user/me")
     public Users getCurrentUser(@CurrentUser UserPrincipal currentUser) {
         Users users = usersDao.findByIdUser(currentUser.getId());
@@ -90,7 +94,7 @@ public class UsersController {
         userInit.setPassword(user.getPassword());
         userInit.setTelephone(user.getTelephone());
         userInit.setAdresse(user.getAdresse());
-        userInit.setRole(user.getRole());
+        userInit.setRole(rolesDao.findByIdRole(user.getRole().getIdRole()));
         userInit.setExpirer(user.getExpirer());
         userInit.setNbrCompagnie(user.getNbrCompagnie());
         userInit.setActive(user.isActive());
@@ -101,21 +105,10 @@ public class UsersController {
     @ResponseStatus(HttpStatus.OK)
     public Users update(@PathVariable("id") final Long id, @Validated @RequestBody final CompteRequest user) {
         Users userInit = this.usersDao.getOneOptional(id).orElseThrow(() -> new NotFoundRequestException("Objet dont l'id "+id+" n'existe pas!"));
-        userInit.setNom(user.getNom());
-        userInit.setPrenom(user.getPrenom());
-        userInit.setEmail(user.getEmail());
-        userInit.setUsername(user.getUsername());
-        userInit.setPassword(user.getPassword());
-        userInit.setTelephone(user.getTelephone());
-        userInit.setAdresse(user.getAdresse());
-        userInit.setRole(user.getRole());
-        userInit.setExpirer(user.getExpirer());
-        userInit.setNbrCompagnie(user.getNbrCompagnie());
-        userInit.setActive(user.isActive());
 
-        this.usersDao.updateUser(userInit.getIdUser(), userInit.getUsername(), userInit.getEmail(), userInit.getNom(),
-                userInit.getPrenom(), userInit.getTelephone(), userInit.getAdresse(), userInit.getExpirer(),
-                userInit.getNbrCompagnie(), userInit.getRole());
+        this.usersDao.updateUser(userInit.getIdUser(), user.getUsername(), user.getEmail(), user.getNom(),
+                user.getPrenom(), user.getTelephone(), user.getAdresse(), user.getExpirer(), user.getNbrCompagnie(),
+                rolesDao.findByIdRole(user.getRole().getIdRole()));
 
         return this.usersDao.findByIdUser(id);
     }
@@ -124,17 +117,10 @@ public class UsersController {
     @ResponseStatus(HttpStatus.OK)
     public Users updateConnect(@Validated @RequestBody final CompteRequest user, @CurrentUser UserPrincipal currentUser) {
         Users userInit = this.usersDao.getOneOptional(currentUser.getId()).orElseThrow(() -> new NotFoundRequestException("Objet n'existe pas!"));
-        userInit.setNom(user.getNom());
-        userInit.setPrenom(user.getPrenom());
-        userInit.setEmail(user.getEmail());
-        userInit.setUsername(user.getUsername());
-        userInit.setPassword(user.getPassword());
-        userInit.setTelephone(user.getTelephone());
-        userInit.setAdresse(user.getAdresse());
 
-        this.usersDao.updateUser(userInit.getIdUser(), userInit.getUsername(), userInit.getEmail(), userInit.getNom(),
-                userInit.getPrenom(), userInit.getTelephone(), userInit.getAdresse(), userInit.getExpirer(),
-                userInit.getNbrCompagnie(), userInit.getRole());
+        this.usersDao.updateUser(userInit.getIdUser(), user.getUsername(), user.getEmail(), user.getNom(),
+                user.getPrenom(), user.getTelephone(), user.getAdresse(), user.getExpirer(),
+                user.getNbrCompagnie(), rolesDao.findByIdRole(user.getRole().getIdRole()));
 
         return this.usersDao.findByIdUser(currentUser.getId());
     }

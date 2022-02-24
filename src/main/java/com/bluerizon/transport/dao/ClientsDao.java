@@ -15,6 +15,8 @@ public interface ClientsDao {
 
     Optional<Clients> findById(final Long id);
 
+    Clients findByContact(final String contact);
+
     List<Clients> findByDeletedFalseOrderByIdClientDesc();
 
     List<Clients> findByDeletedTrueOrderByIdClientDesc();
@@ -32,6 +34,8 @@ public interface ClientsDao {
     List<Clients> save(List<Clients> clients);
 
     Long countByDeletedFalse();
+
+    Long count();
 
     Long countRecherche(String search);
 

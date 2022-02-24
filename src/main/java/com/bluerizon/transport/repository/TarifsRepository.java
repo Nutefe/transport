@@ -72,7 +72,7 @@ public interface TarifsRepository extends JpaRepository<Tarifs, TarifPK> {
     @Query("SELECT COUNT(t) FROM Tarifs t WHERE t.deleted = false")
     Long countByDeletedFalse();
 
-    @Query("SELECT t FROM Tarifs t WHERE t.deleted = false AND t.tarifPK.bus.compagnie=?1")
+    @Query("SELECT COUNT(t) FROM Tarifs t WHERE t.deleted = false AND t.tarifPK.bus.compagnie=?1")
     Long countByCompagnie(Compagnies compagnie);
 
 }

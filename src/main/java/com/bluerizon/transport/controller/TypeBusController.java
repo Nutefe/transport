@@ -86,8 +86,9 @@ public class TypeBusController {
     public TypeBus save(@Validated @RequestBody final TypeBusRequest request, @CurrentUser UserPrincipal currentUser) {
         Users user = usersDao.findByIdUser(currentUser.getId());
         Compagnies compagnie = compagniesDao.findByIdCompagnie(request.getCompagnie().getIdCompagnie());
+        UserCompagnies userCompagnie = userCompagnieDao.findByUserPK(new UserPK(user, compagnie));
         TypeBus typeBus = new TypeBus();
-        typeBus.setUserCompagnie(new UserCompagnies(new UserPK(user, compagnie)));
+        typeBus.setUserCompagnie(userCompagnie);
         typeBus.setLibelle(request.getLibelle());
         return this.typeBusDao.save(typeBus);
     }

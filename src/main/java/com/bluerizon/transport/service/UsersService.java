@@ -1,6 +1,7 @@
 package com.bluerizon.transport.service;
 
 import com.bluerizon.transport.dao.UsersDao;
+import com.bluerizon.transport.entity.Pays;
 import com.bluerizon.transport.entity.Roles;
 import com.bluerizon.transport.entity.Users;
 import com.bluerizon.transport.repository.UsersRepository;
@@ -98,6 +99,11 @@ public class UsersService implements UsersDao {
     }
 
     @Override
+    public List<Users> rechercheAdmin(String search, Long idUser, Pageable pageable) {
+        return repository.rechercheAdmin(search, idUser, pageable);
+    }
+
+    @Override
     public List<Users> rechercheDirecteur(String search, Pageable pageable) {
         return repository.rechercheDirecteur(search, pageable);
     }
@@ -139,8 +145,8 @@ public class UsersService implements UsersDao {
 
     @Override
     public void updateUser(Long id, String username, String email, String nom, String prenom, String telephone,
-                           String adresse, Date expirer, Integer nbrCompagnie, Roles role) {
-        repository.updateUser(id, username, email, nom, prenom, telephone, adresse, expirer, nbrCompagnie, role);
+                           String adresse, Date expirer, Integer nbrCompagnie, Roles role, Pays pays) {
+        repository.updateUser(id, username, email, nom, prenom, telephone, adresse, expirer, nbrCompagnie, role, pays);
     }
 
     @Override
@@ -177,6 +183,11 @@ public class UsersService implements UsersDao {
     @Override
     public Long countRechercheUser(String search, Long idUser) {
         return repository.countRechercheUser(search, idUser);
+    }
+
+    @Override
+    public Long countRechercheAdmin(String search, Long idUser) {
+        return repository.countRechercheAdmin(search, idUser);
     }
 
     @Override

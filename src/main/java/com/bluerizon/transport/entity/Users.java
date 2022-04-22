@@ -45,7 +45,7 @@ public class Users implements Serializable {
     @JsonIgnore
     @Column(name = "password", nullable = false)
     private String password;
-    @Column(name = "nom", nullable = false)
+    @Column(name = "nom")
     private String nom;
     @Column(name = "prenom")
     private String prenom;
@@ -58,9 +58,12 @@ public class Users implements Serializable {
     @JoinColumn(name = "role", referencedColumnName = "idRole", nullable = false)
     @ManyToOne
     private Roles role;
-    @Column(name = "nbrCompagnie")
+    @JoinColumn(name = "pays", referencedColumnName = "idPays", nullable = false)
+    @ManyToOne
+    private Pays pays;
+    @Column(name = "nbrCompagnie", nullable = false)
     private Integer nbrCompagnie = 1;
-    @Column(name = "expirer")
+    @Column(name = "expirer", nullable = false)
     private Date expirer;
     @Column(name = "active")
     private boolean active = true;
@@ -166,6 +169,14 @@ public class Users implements Serializable {
         this.role = role;
     }
 
+    public Pays getPays() {
+        return pays;
+    }
+
+    public void setPays(Pays pays) {
+        this.pays = pays;
+    }
+
     public Integer getNbrCompagnie() {
         return nbrCompagnie;
     }
@@ -227,12 +238,12 @@ public class Users implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Users users = (Users) o;
-        return active == users.active && deleted == users.deleted && Objects.equals(idUser, users.idUser) && Objects.equals(username, users.username) && Objects.equals(email, users.email) && Objects.equals(password, users.password) && Objects.equals(nom, users.nom) && Objects.equals(prenom, users.prenom) && Objects.equals(adresse, users.adresse) && Objects.equals(telephone, users.telephone) && Objects.equals(avatar, users.avatar) && Objects.equals(role, users.role) && Objects.equals(nbrCompagnie, users.nbrCompagnie) && Objects.equals(expirer, users.expirer) && Objects.equals(version, users.version) && Objects.equals(createdAt, users.createdAt) && Objects.equals(updatedAt, users.updatedAt);
+        return active == users.active && deleted == users.deleted && version == users.version && Objects.equals(idUser, users.idUser) && Objects.equals(username, users.username) && Objects.equals(email, users.email) && Objects.equals(password, users.password) && Objects.equals(nom, users.nom) && Objects.equals(prenom, users.prenom) && Objects.equals(adresse, users.adresse) && Objects.equals(telephone, users.telephone) && Objects.equals(avatar, users.avatar) && Objects.equals(role, users.role) && Objects.equals(pays, users.pays) && Objects.equals(nbrCompagnie, users.nbrCompagnie) && Objects.equals(expirer, users.expirer) && Objects.equals(createdAt, users.createdAt) && Objects.equals(updatedAt, users.updatedAt);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(idUser, username, email, password, nom, prenom, adresse, telephone, avatar, role, nbrCompagnie, expirer, active, deleted, version, createdAt, updatedAt);
+        return Objects.hash(idUser, username, email, password, nom, prenom, adresse, telephone, avatar, role, pays, nbrCompagnie, expirer, active, deleted, version, createdAt, updatedAt);
     }
 
     @Override
@@ -248,6 +259,7 @@ public class Users implements Serializable {
                 ", telephone='" + telephone + '\'' +
                 ", avatar='" + avatar + '\'' +
                 ", role=" + role +
+                ", pays=" + pays +
                 ", nbrCompagnie=" + nbrCompagnie +
                 ", expirer=" + expirer +
                 ", active=" + active +

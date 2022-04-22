@@ -67,4 +67,12 @@ public class Helpers {
         return "AR"+datejour+"_"+heurejour+"_"+calendar.getTimeInMillis();
     }
 
+    public static Date defaultDate(){
+        Calendar cal = Calendar.getInstance();
+        //Date today = cal.getTime();
+        cal.add(Calendar.YEAR, 1); // to get previous year add -1
+        Date nextYear = cal.getTime();
+        return nextYear;
+    }
+
 }

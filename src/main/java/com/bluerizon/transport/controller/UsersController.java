@@ -1,6 +1,7 @@
 package com.bluerizon.transport.controller;
 
 
+import com.bluerizon.transport.dao.PaysDao;
 import com.bluerizon.transport.dao.RolesDao;
 import com.bluerizon.transport.dao.UsersDao;
 import com.bluerizon.transport.entity.Users;
@@ -53,6 +54,9 @@ public class UsersController {
     @Value("${app.url_user_all_no_admin_search_page}")
     private String url_user_all_no_admin_search_page;
 
+    @Value("${app.url_user_all_admin_search_page}")
+    private String url_user_all_admin_search_page;
+
     @Value("${app.url_user_directeur_actif_search_page}")
     private String url_user_directeur_actif_search_page;
 
@@ -64,6 +68,9 @@ public class UsersController {
 
     @Autowired
     private RolesDao rolesDao;
+
+    @Autowired
+    private PaysDao paysDao;
 
     @GetMapping("/user/me")
     public Users getCurrentUser(@CurrentUser UserPrincipal currentUser) {
@@ -95,6 +102,7 @@ public class UsersController {
         userInit.setTelephone(user.getTelephone());
         userInit.setAdresse(user.getAdresse());
         userInit.setRole(rolesDao.findByIdRole(user.getRole().getIdRole()));
+        userInit.setPays(paysDao.findByIdPays(user.getPays().getIdPays()));
         userInit.setExpirer(user.getExpirer());
         userInit.setNbrCompagnie(user.getNbrCompagnie());
         userInit.setActive(user.isActive());
@@ -108,7 +116,7 @@ public class UsersController {
 
         this.usersDao.updateUser(userInit.getIdUser(), user.getUsername(), user.getEmail(), user.getNom(),
                 user.getPrenom(), user.getTelephone(), user.getAdresse(), user.getExpirer(), user.getNbrCompagnie(),
-                rolesDao.findByIdRole(user.getRole().getIdRole()));
+                rolesDao.findByIdRole(user.getRole().getIdRole()), paysDao.findByIdPays(user.getPays().getIdPays()));
 
         return this.usersDao.findByIdUser(id);
     }
@@ -120,7 +128,7 @@ public class UsersController {
 
         this.usersDao.updateUser(userInit.getIdUser(), user.getUsername(), user.getEmail(), user.getNom(),
                 user.getPrenom(), user.getTelephone(), user.getAdresse(), user.getExpirer(),
-                user.getNbrCompagnie(), rolesDao.findByIdRole(user.getRole().getIdRole()));
+                user.getNbrCompagnie(), rolesDao.findByIdRole(user.getRole().getIdRole()), paysDao.findByIdPays(user.getPays().getIdPays()));
 
         return this.usersDao.findByIdUser(currentUser.getId());
     }
@@ -512,6 +520,58 @@ public class UsersController {
                 userPage.setTo(Long.valueOf(page_size));
             } else {
                 userPage.setPrev_page_url(url_user_all_no_admin_search_page+(page-1)+"/"+s);
+                userPage.setFrom(1L + (Long.valueOf(page_size)*(page -1)));
+                userPage.setTo(Long.valueOf(page_size) * page);
+            }
+
+            userPage.setPath(path);
+            userPage.setData(users);
+
+        }else {
+            userPage.setTotal(0L);
+        }
+
+        return userPage;
+    }
+
+    @RequestMapping(value = "/user_all_admin_search_page/{page}/{s}", method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseUserPage searchUserAllAdminPage(@PathVariable(value = "page") int page,
+                                                    @PathVariable(value = "s") String s,
+                                                     @CurrentUser UserPrincipal currentUser){
+
+        Pageable pageable = PageRequest.of(page - 1, page_size, sortByCreatedDesc());
+        List<Users> users = this.usersDao.rechercheAdmin(s, currentUser.getId(), pageable);
+
+        ResponseUserPage userPage = new ResponseUserPage();
+        Long total = this.usersDao.countRechercheAdmin(s, currentUser.getId());
+        Long lastPage;
+
+        if (total > 0){
+            userPage.setTotal(total);
+            userPage.setPer_page(page_size);
+            userPage.setCurrent_page(page);
+
+            if (total %page_size == 0){
+                lastPage = total/page_size;
+            } else {
+                lastPage = (total/page_size)+1;
+            }
+            userPage.setLast_page(lastPage);
+            userPage.setFirst_page_url(url_user_all_admin_search_page+1+"/"+s);
+            userPage.setLast_page_url(url_user_all_admin_search_page+lastPage+"/"+s);
+            if (page >= lastPage){
+
+            }else {
+                userPage.setNext_page_url(url_user_all_admin_search_page+(page+1)+"/"+s);
+            }
+
+            if (page == 1){
+                userPage.setPrev_page_url(null);
+                userPage.setFrom(1L);
+                userPage.setTo(Long.valueOf(page_size));
+            } else {
+                userPage.setPrev_page_url(url_user_all_admin_search_page+(page-1)+"/"+s);
                 userPage.setFrom(1L + (Long.valueOf(page_size)*(page -1)));
                 userPage.setTo(Long.valueOf(page_size) * page);
             }

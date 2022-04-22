@@ -1,5 +1,6 @@
 package com.bluerizon.transport.dao;
 
+import com.bluerizon.transport.entity.Pays;
 import com.bluerizon.transport.entity.Roles;
 import com.bluerizon.transport.entity.Users;
 import org.springframework.data.domain.Pageable;
@@ -44,6 +45,8 @@ public interface UsersDao {
 
     List<Users> rechercheUser(String search, Long idUser, Pageable pageable);
 
+    List<Users> rechercheAdmin(String search, Long idUser, Pageable pageable);
+
     List<Users> rechercheDirecteur(String search, Pageable pageable);
 
     List<Users> rechercheDirecteurActif(String search, Pageable pageable);
@@ -61,7 +64,7 @@ public interface UsersDao {
     void updateNbrCompagnie(Long id, Integer nbrCompagnie);
 
     void updateUser(Long id, String username, String email, String nom, String prenom, String telephone,
-                    String adresse, Date expirer, Integer nbrCompagnie, Roles role);
+                    String adresse, Date expirer, Integer nbrCompagnie, Roles role, Pays pays);
 
     Users save(Users user);
 
@@ -76,6 +79,8 @@ public interface UsersDao {
     Long countUserDirecteurDesactif();
 
     Long countRechercheUser(String search, Long idUser);
+
+    Long countRechercheAdmin(String search, Long idUser);
 
     Long countRechercheDirecteur(String search);
 

@@ -1,5 +1,6 @@
 package com.bluerizon.transport.requeste;
 
+import com.bluerizon.transport.entity.Pays;
 import com.bluerizon.transport.entity.Roles;
 
 import javax.validation.constraints.*;
@@ -28,6 +29,7 @@ public class CompteRequest {
     private String telephone;
     private String adresse;
     private Roles role;
+    private Pays pays;
     private Integer nbrCompagnie = 1;
     private Date expirer;
     private boolean active = true;
@@ -36,7 +38,7 @@ public class CompteRequest {
     }
 
     public CompteRequest(String username, String email, String password, String nom, String prenom, String telephone,
-                         String adresse, Roles role, Integer nbrCompagnie, Date expirer, boolean active) {
+                         String adresse, Roles role, Pays pays, Integer nbrCompagnie, Date expirer, boolean active) {
         this.username = username;
         this.email = email;
         this.password = password;
@@ -45,6 +47,7 @@ public class CompteRequest {
         this.telephone = telephone;
         this.adresse = adresse;
         this.role = role;
+        this.pays = pays;
         this.nbrCompagnie = nbrCompagnie;
         this.expirer = expirer;
         this.active = active;
@@ -112,6 +115,14 @@ public class CompteRequest {
 
     public void setRole(Roles role) {
         this.role = role;
+    }
+
+    public Pays getPays() {
+        return pays;
+    }
+
+    public void setPays(Pays pays) {
+        this.pays = pays;
     }
 
     public Integer getNbrCompagnie() {

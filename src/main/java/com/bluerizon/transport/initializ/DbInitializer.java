@@ -112,10 +112,6 @@ public class DbInitializer implements CommandLineRunner {
         userSys.setPassword(passwordEncoder.encode("@sys@#123"));
         userSys.setRole(role1);
 
-        if (!this.usersRepository.findByUsernameAndActiveTrueAndDeletedFalse("sysadmin").isPresent()){
-            this.usersRepository.save(userSys);
-        }
-
         System.out.println(" -- insert Countries");
 
         if (this.paysRepository.countByDeletedFalse() <= 0){
@@ -128,6 +124,11 @@ public class DbInitializer implements CommandLineRunner {
                     paysList.add(pays);
                 }
                 this.paysRepository.saveAll(paysList);
+            }
+
+            userSys.setPays(paysRepository.findByIdPays(218));
+            if (!this.usersRepository.findByUsernameAndActiveTrueAndDeletedFalse("sysadmin").isPresent()){
+                this.usersRepository.save(userSys);
             }
         }
 

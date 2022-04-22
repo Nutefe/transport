@@ -1,5 +1,6 @@
 package com.bluerizon.transport.repository;
 
+import com.bluerizon.transport.entity.Pays;
 import com.bluerizon.transport.entity.Roles;
 import com.bluerizon.transport.entity.Users;
 import org.springframework.data.domain.Pageable;
@@ -61,6 +62,11 @@ public interface UsersRepository extends JpaRepository<Users, Long> {
 
     @Query("SELECT u FROM Users u WHERE (u.username LIKE CONCAT('%',:search,'%') OR " +
             "u.nom LIKE CONCAT('%',:search,'%') OR u.prenom LIKE CONCAT('%',:search,'%')) AND "+
+            "(u.role.idRole = 1 AND u.deleted = false AND u.idUser != :idUser)")
+    List<Users> rechercheAdmin(String search, Long idUser, Pageable pageable);
+
+    @Query("SELECT u FROM Users u WHERE (u.username LIKE CONCAT('%',:search,'%') OR " +
+            "u.nom LIKE CONCAT('%',:search,'%') OR u.prenom LIKE CONCAT('%',:search,'%')) AND "+
             "(u.role.idRole = 2 AND u.deleted = false)")
     List<Users> rechercheDirecteur(String search, Pageable pageable);
 
@@ -103,12 +109,12 @@ public interface UsersRepository extends JpaRepository<Users, Long> {
     @Modifying(clearAutomatically = true)
     @Query("update Users u set u.username = :username, u.email = :email, u.nom = :nom, u.prenom = :prenom, " +
             "u.telephone = :telephone,  u.adresse = :adresse, " +
-            "u.expirer = :expirer, u.nbrCompagnie = :nbrCompagnie, u.role = :role where u.idUser = :id")
+            "u.expirer = :expirer, u.nbrCompagnie = :nbrCompagnie, u.role = :role, u.pays = :pays where u.idUser = :id")
     void updateUser(@Param(value = "id") Long id, @Param(value = "username") String username,
                     @Param(value = "email") String email, @Param(value = "nom") String nom,
                     @Param(value = "prenom") String prenom, @Param(value = "telephone") String telephone,
                     @Param(value = "adresse") String adresse,@Param(value = "expirer") Date expirer,
-                    @Param(value = "nbrCompagnie") Integer nbrCompagnie, @Param(value = "role") Roles role);
+                    @Param(value = "nbrCompagnie") Integer nbrCompagnie, @Param(value = "role") Roles role, @Param(value = "pays") Pays pays);
 
     @Query("SELECT COUNT(u) FROM Users u WHERE u.role.idRole != 1 AND u.deleted = false AND u.idUser != :idUser")
     Long countUser(Long idUser);
@@ -129,6 +135,11 @@ public interface UsersRepository extends JpaRepository<Users, Long> {
             "u.nom LIKE CONCAT('%',:search,'%') OR u.prenom LIKE CONCAT('%',:search,'%')) AND "+
             "(u.role.idRole != 1 AND u.deleted = false AND u.idUser != :idUser)")
     Long countRechercheUser(String search, Long idUser);
+
+    @Query("SELECT COUNT(u) FROM Users u WHERE (u.username LIKE CONCAT('%',:search,'%') OR " +
+            "u.nom LIKE CONCAT('%',:search,'%') OR u.prenom LIKE CONCAT('%',:search,'%')) AND "+
+            "(u.role.idRole = 1 AND u.deleted = false AND u.idUser != :idUser)")
+    Long countRechercheAdmin(String search, Long idUser);
 
     @Query("SELECT COUNT(u) FROM Users u WHERE (u.username LIKE CONCAT('%',:search,'%') OR " +
             "u.nom LIKE CONCAT('%',:search,'%') OR u.prenom LIKE CONCAT('%',:search,'%')) AND "+

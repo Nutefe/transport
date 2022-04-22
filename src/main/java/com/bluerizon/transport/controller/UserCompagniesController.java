@@ -66,6 +66,9 @@ public class UserCompagniesController {
 
     @Autowired
     private RolesDao rolesDao;
+
+    @Autowired
+    private PaysDao paysDao;
     
     @RequestMapping(value = { "/user_compagnie_no_deleted" }, method = { RequestMethod.GET })
     @ResponseStatus(HttpStatus.OK)
@@ -132,13 +135,14 @@ public class UserCompagniesController {
         userInit.setTelephone(request.getTelephone());
         userInit.setAdresse(request.getAdresse());
         userInit.setRole(rolesDao.findByIdRole(request.getRole().getIdRole()));
+        userInit.setPays(paysDao.findByIdPays(request.getPays().getIdPays()));
         userInit.setExpirer(request.getExpirer());
         userInit.setNbrCompagnie(request.getNbrCompagnie());
         userInit.setActive(request.isActive());
 
         this.usersDao.updateUser(userInit.getIdUser(), userInit.getUsername(), userInit.getEmail(), userInit.getNom(),
                 userInit.getPrenom(), userInit.getTelephone(), userInit.getAdresse(), userInit.getExpirer(),
-                userInit.getNbrCompagnie(), userInit.getRole());
+                userInit.getNbrCompagnie(), userInit.getRole(), userInit.getPays());
 
         Compagnies compagnie = compagniesDao.findByIdCompagnie(idCompagnie);
         Compagnies compagnieChange = compagniesDao.findByIdCompagnie(request.getCompagnie().getIdCompagnie());

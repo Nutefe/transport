@@ -1,11 +1,15 @@
 package com.bluerizon.transport.controller;
 
+import com.bluerizon.transport.dao.PaysDao;
+import com.bluerizon.transport.dao.RolesDao;
 import com.bluerizon.transport.dao.UsersDao;
 import com.bluerizon.transport.entity.RefreshTokens;
 import com.bluerizon.transport.entity.Users;
 import com.bluerizon.transport.exception.TokenRefreshException;
+import com.bluerizon.transport.helper.Helpers;
 import com.bluerizon.transport.requeste.CompteRequest;
 import com.bluerizon.transport.requeste.LoginRequest;
+import com.bluerizon.transport.requeste.SignupRequest;
 import com.bluerizon.transport.requeste.TokenRefreshRequest;
 import com.bluerizon.transport.response.JwtAuthenticationResponse;
 import com.bluerizon.transport.response.TokenRefreshResponse;
@@ -22,6 +26,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -44,6 +49,12 @@ public class AuthController {
 
     @Autowired
     private UsersDao usersDao;
+
+    @Autowired
+    private RolesDao rolesDao;
+
+    @Autowired
+    private PaysDao paysDao;
 
     @Autowired
     private RefreshTokenService refreshTokenService;
@@ -86,6 +97,21 @@ public class AuthController {
                 })
                 .orElseThrow(() -> new TokenRefreshException(requestRefreshToken,
                         "Refresh token is not in database!"));
+    }
+
+    @RequestMapping(value = { "/signup" }, method = { RequestMethod.POST })
+    @ResponseStatus(HttpStatus.OK)
+    public Users save(@Validated @RequestBody final SignupRequest user) {
+        Users userInit = new Users();
+        userInit.setEmail(user.getEmail());
+        userInit.setUsername(user.getUsername());
+        userInit.setPassword(user.getPassword());
+        userInit.setRole(rolesDao.findByIdRole(6));
+        userInit.setPays(paysDao.findByIdPays(user.getPays().getIdPays()));
+        userInit.setExpirer(Helpers.defaultDate());
+        userInit.setNbrCompagnie(0);
+        userInit.setActive(false);
+        return this.usersDao.save(userInit);
     }
 
     private Sort sortByCreatedDesc(){
